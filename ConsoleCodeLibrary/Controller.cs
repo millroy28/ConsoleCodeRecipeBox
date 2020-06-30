@@ -9,16 +9,21 @@ namespace ConsoleCodeLibrary
     {
         public static void Run(int[] consoleSize)
         {
-            DrawScreen draw = new DrawScreen(consoleSize);
+            ColorProfile ingredientCP = ReadFile.ReadColorProfile("ingredient");
+
+            DrawScreen ingredientDraw = new DrawScreen(consoleSize, ingredientCP);
             int page = 0;
             int selection = 0;
-            int maxLinesInDisplay = draw.DrawBorders();
+            int maxLinesInDisplay = ingredientDraw.DrawBorders();
 
             string[] ingredientFiles = FileIO.GetFileList("ingredients");
             string[] recipeFiles = FileIO.GetFileList("recipies");
 
-            int listStatus = draw.PrintList(page, ingredientFiles);
+            int listStatus = ingredientDraw.PrintList(page, ingredientFiles);
 
+            ColorProfile ingredientColorProfile = new ColorProfile();
+            string test = "Yellow";
+            ingredientColorProfile.Border = (ConsoleColor) Enum.Parse(typeof(ConsoleColor), test);
 
             do
             {
@@ -52,7 +57,7 @@ namespace ConsoleCodeLibrary
                         {
                             selection = 0;
                             page--;
-                            listStatus = draw.PrintList(page, ingredientFiles);
+                            listStatus = ingredientDraw.PrintList(page, ingredientFiles);
                             break;
                         }
                     case ConsoleKey.PageDown:
@@ -64,7 +69,7 @@ namespace ConsoleCodeLibrary
                         {
                             selection = 0;
                             page++;
-                            listStatus = draw.PrintList(page, ingredientFiles);
+                            listStatus = ingredientDraw.PrintList(page, ingredientFiles);
                             break;
                         }
                     case ConsoleKey.End:
@@ -81,7 +86,7 @@ namespace ConsoleCodeLibrary
                         else
                         {
                             selection--;
-                            draw.MoveListSelection(selection, true, ingredientFiles[selection + (maxLinesInDisplay * page) + 1], ingredientFiles[selection + (maxLinesInDisplay * page)]);
+                            ingredientDraw.MoveListSelection(selection, true, ingredientFiles[selection + (maxLinesInDisplay * page) + 1], ingredientFiles[selection + (maxLinesInDisplay * page)]);
                             break;
                         }
 
@@ -95,7 +100,7 @@ namespace ConsoleCodeLibrary
                         else
                         {
                             selection++;
-                            draw.MoveListSelection(selection, false, ingredientFiles[selection + (maxLinesInDisplay * page) - 1], ingredientFiles[selection + (maxLinesInDisplay * page)]);
+                            ingredientDraw.MoveListSelection(selection, false, ingredientFiles[selection + (maxLinesInDisplay * page) - 1], ingredientFiles[selection + (maxLinesInDisplay * page)]);
                             break;
                         }
                     case ConsoleKey.Select:

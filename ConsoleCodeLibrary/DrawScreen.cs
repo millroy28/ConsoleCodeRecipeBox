@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Drawing;
 
 namespace ConsoleCodeLibrary
 {
@@ -16,22 +17,25 @@ namespace ConsoleCodeLibrary
         public static int MainVerticalBorderLocation { get; set; }
         public static char MainHorizontalBorderCharacter { get; set; }
         public static char MainVerticalBorderCharacter { get; set; }
+        public static ColorProfile Colors { get; set; }
+
         //Default Constructor
         public DrawScreen()
         {
 
         }
         //Constructor
-        public DrawScreen(int[] screenParams)
+        public DrawScreen(int[] _screenParams, ColorProfile _colors)
         {
-            XMax = screenParams[0];
-            YMax = screenParams[1];
+            XMax = _screenParams[0];
+            YMax = _screenParams[1];
             XListStart = 1;
             YListStart = 2;
             MainHorizontalBorderLocation = 1;
             MainVerticalBorderLocation = 31;
             MainHorizontalBorderCharacter = '=';
             MainVerticalBorderCharacter = '|';
+            Colors = _colors;
         }
 
         public void MoveListSelection (int selection, bool up, string previousListItem, string selectedListItem)
@@ -40,13 +44,12 @@ namespace ConsoleCodeLibrary
             Console.SetCursorPosition(XListStart, YListStart + selection);
             Console.Write("                              ");
             Console.SetCursorPosition(XListStart, YListStart + selection);
-            Console.ForegroundColor = ConsoleColor.Black;
-            Console.BackgroundColor = ConsoleColor.DarkYellow;
+            Console.ForegroundColor = Colors.ListTextHighlight;
+            Console.BackgroundColor = Colors.ListTextHighlightBackground;
             Console.Write(selectedListItem);
             Console.ResetColor();
 
-
-            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.ForegroundColor = Colors.ListText;
             if (up)
             {
                 Console.SetCursorPosition(XListStart, YListStart + selection + 1);
@@ -93,8 +96,8 @@ namespace ConsoleCodeLibrary
                     }
                     else
                     {
-                        Console.BackgroundColor = ConsoleColor.Gray;
-                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                        Console.BackgroundColor = Colors.MenuTextBackground;
+                        Console.ForegroundColor = Colors.MenuText;
                         Console.Write($"PAGE {page + 1} PgUp: Prev             ");
                         Console.ResetColor();
                         return -1;
@@ -106,29 +109,29 @@ namespace ConsoleCodeLibrary
                 {
                     if (page == 0)
                     {
-                        Console.BackgroundColor = ConsoleColor.Gray;
-                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                        Console.BackgroundColor = Colors.MenuTextBackground;
+                        Console.ForegroundColor = Colors.MenuText;
                         Console.Write($"PAGE {page + 1}              PgDn: Next");
                         Console.ResetColor();
                         return 1;
                     }
                     else
                     {
-                        Console.BackgroundColor = ConsoleColor.Gray;
-                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                        Console.BackgroundColor = Colors.MenuTextBackground;
+                        Console.ForegroundColor = Colors.MenuText;
                         Console.Write($"PAGE {page + 1} PgUp: Prev / PgDn: Next");
                         Console.ResetColor();
                         return 0;
                     }
                 }
-                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.ForegroundColor = Colors.ListText;
                 Console.Write(names[j]);
             }
             return 0;
         }
         public int DrawBorders ()
         {
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.ForegroundColor = Colors.Border;
             VerticleBorder(YMax, MainVerticalBorderLocation, MainHorizontalBorderLocation, MainVerticalBorderCharacter);
             HorizontalBorder(XMax, MainHorizontalBorderLocation, MainHorizontalBorderCharacter);
             Console.ResetColor();
