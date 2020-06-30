@@ -13,15 +13,11 @@ namespace ConsoleCodeLibrary
             int page = 0;
             int selection = 0;
             int maxLinesInDisplay = draw.DrawBorders();
-            int maxListLength = maxLinesInDisplay - 1;
 
-            List<string> test = new List<string>();
-            for (int i = 0; i < 100; i++)
-            {
-                test.Add($"Test Name {i}");
-            }
+            string[] ingredientFiles = FileIO.GetFileList("ingredients");
+            string[] recipeFiles = FileIO.GetFileList("recipies");
 
-            int listStatus = draw.PrintList(page, test);
+            int listStatus = draw.PrintList(page, ingredientFiles);
 
 
             do
@@ -48,7 +44,7 @@ namespace ConsoleCodeLibrary
                     case ConsoleKey.Spacebar:
                         break;
                     case ConsoleKey.PageUp:
-                        if (listStatus == 1)
+                        if (listStatus == 1 || listStatus == 2)
                         {
                             break;
                         }
@@ -56,11 +52,11 @@ namespace ConsoleCodeLibrary
                         {
                             selection = 0;
                             page--;
-                            listStatus = draw.PrintList(page, test);
+                            listStatus = draw.PrintList(page, ingredientFiles);
                             break;
                         }
                     case ConsoleKey.PageDown:
-                        if(listStatus== -1)
+                        if(listStatus== -1 || listStatus == 2)
                         {
                             break;
                         }
@@ -68,7 +64,7 @@ namespace ConsoleCodeLibrary
                         {
                             selection = 0;
                             page++;
-                            listStatus = draw.PrintList(page, test);
+                            listStatus = draw.PrintList(page, ingredientFiles);
                             break;
                         }
                     case ConsoleKey.End:
@@ -78,28 +74,28 @@ namespace ConsoleCodeLibrary
                     case ConsoleKey.LeftArrow:
                         break;
                     case ConsoleKey.UpArrow:
-                        if(selection == 0)//will break when page goes negative - fix
+                        if(selection == 0)
                         {
                             break;
                         }
                         else
                         {
                             selection--;
-                            draw.MoveListSelection(selection, true, test[selection + (maxLinesInDisplay * page) + 1], test[selection + (maxLinesInDisplay * page)]);
+                            draw.MoveListSelection(selection, true, ingredientFiles[selection + (maxLinesInDisplay * page) + 1], ingredientFiles[selection + (maxLinesInDisplay * page)]);
                             break;
                         }
 
                     case ConsoleKey.RightArrow:
                         break;
                     case ConsoleKey.DownArrow:
-                        if (selection == maxLinesInDisplay - 1 || selection + (maxLinesInDisplay * page) >= test.Count - 1 )
+                        if (selection == maxLinesInDisplay - 1 || selection + (maxLinesInDisplay * page) >= ingredientFiles.Length - 1 )
                         {
                             break;
                         }
                         else
                         {
                             selection++;
-                            draw.MoveListSelection(selection, false, test[selection + (maxLinesInDisplay * page) - 1], test[selection + (maxLinesInDisplay * page)]);
+                            draw.MoveListSelection(selection, false, ingredientFiles[selection + (maxLinesInDisplay * page) - 1], ingredientFiles[selection + (maxLinesInDisplay * page)]);
                             break;
                         }
                     case ConsoleKey.Select:

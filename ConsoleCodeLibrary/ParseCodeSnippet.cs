@@ -14,9 +14,9 @@ namespace ConsoleCodeLibrary
         public const char LanguageEnd = ']';
         public const string BeginCodeSection = ":::Code:::";
 
-        public static List<string> GetFileContents(string fileName)
+        public static List<string> GetFileContents(string directory, string fileName)
         {
-            List<string> rawFileContents = FileIO.GetFile(fileName);
+            List<string> rawFileContents = FileIO.GetFile(directory, fileName);
             return rawFileContents;
         }
 
@@ -34,7 +34,7 @@ namespace ConsoleCodeLibrary
 
         public static CodeSnippet GetCodeSnippet (string fileName)
         {
-            List<string> rawFileContents = GetFileContents(fileName);
+            List<string> rawFileContents = GetFileContents("ingredients", fileName);
             CodeSnippet thisSnippet = new CodeSnippet();
 
             thisSnippet.Title = PullLine(TitleBeginAndEnd, TitleBeginAndEnd, rawFileContents);

@@ -64,10 +64,14 @@ namespace ConsoleCodeLibrary
             Console.ResetColor();
         }
 
-        public int PrintList (int page, List<string> names)
+        public int PrintList (int page, string[] names)
         {
-            int listMaxLength = YMax - YListStart - 1;
+            //Returns -1 when on the last page of the list. Controller will break on a -1 when PgDn is pressed here disallowing further scrolling.
+            //Returns 1 when on the first page of the list. Controller will break on a 1 when PgUp is pressed here disallowing further scrolling.
+            //Returns 0 otherwise, allowing scrolling either way.
+            //Returns 2 if the list is too small for scrolling
 
+            int listMaxLength = YMax - YListStart - 1;
             int listStartIndex = listMaxLength * page;
 
             //clear list on display
@@ -79,14 +83,13 @@ namespace ConsoleCodeLibrary
             
             for (int i = YListStart, j = listStartIndex; i < YMax; i++, j++)
             {
-                             
                 Console.SetCursorPosition(XListStart, i);
-                if (j == names.Count)
+                if (j == names.Length)  //If end of index is reached
                 {
                     Console.SetCursorPosition(XListStart, YMax - 1);
-                    if(page == 0)
+                    if(page == 0) 
                     {
-                        return 0;
+                        return 2;
                     }
                     else
                     {
@@ -99,7 +102,7 @@ namespace ConsoleCodeLibrary
 
                 }
                 
-                if(j == listStartIndex + listMaxLength) 
+                if(j == listStartIndex + listMaxLength) //If end of display length is reached
                 {
                     if (page == 0)
                     {

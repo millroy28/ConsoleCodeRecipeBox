@@ -9,9 +9,9 @@ namespace ConsoleCodeLibrary
 {
     class FileIO
     {
-        public static List<string> GetFile(string fileName)
+        public static List<string> GetFile(string directory, string fileName)
         {
-            StreamReader reader = new StreamReader($"../../../stash/{fileName}.txt");
+            StreamReader reader = new StreamReader($"../../../{directory}/{fileName}.txt");
             string line = reader.ReadLine();
             List<string> fileContents = new List<string>();
             do
@@ -23,9 +23,9 @@ namespace ConsoleCodeLibrary
             return fileContents;
         }
 
-        public static string[] GetFileList()
+        public static string[] GetFileList(string directory)
         {
-            string[] fileList = Directory.GetFiles("../../../stash/");
+            string[] fileList = Directory.GetFiles($"../../../{directory}/");
             return fileList;
         }
     }

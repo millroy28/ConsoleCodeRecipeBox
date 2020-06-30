@@ -15,13 +15,13 @@ namespace ConsoleCodeLibrary
         public const char LanguageEnd = ']';
         public const string BeginCodeSection = ":::Code:::";
 
-        public static List<string> GetFileContents(string fileName)
-        {
-            List<string> rawFileContents = FileIO.GetFile(fileName);
-            return rawFileContents;
-        }
-  
-        
+        //public static List<string> GetFileContents(string fileName)
+        //{
+        //    List<string> rawFileContents = FileIO.GetFile(fileName);
+        //    return rawFileContents;
+        //}
+
+
 
 
 
