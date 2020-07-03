@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Net;
-using System.Text;
+
 
 
 namespace ConsoleCodeLibrary
@@ -27,6 +25,20 @@ namespace ConsoleCodeLibrary
         {
             string[] fileList = Directory.GetFiles($"../../../{directory}/");
             return fileList;
+        }
+
+        public static void CategoryDirectoryCheck(string category)
+        {
+            if (!Directory.Exists($"../../../{category}"))
+            {
+                CreateCategoryDirectory(category);
+            }
+        }
+
+        public static void CreateCategoryDirectory(string category)
+        {
+            Directory.CreateDirectory($"../../../{category}");
+            File.Copy("../../../config/COLORDEF.txt", $"../../../config/{category}.txt");
         }
     }
 }

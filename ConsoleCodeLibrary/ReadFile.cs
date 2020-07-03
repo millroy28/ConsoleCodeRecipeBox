@@ -1,8 +1,7 @@
-﻿using Microsoft.VisualBasic.CompilerServices;
+﻿
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
-using System.Text;
+
 
 namespace ConsoleCodeLibrary
 {
@@ -64,6 +63,17 @@ namespace ConsoleCodeLibrary
             colors.MenuTextBackground = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), menuTextBg[1]);
 
             return colors;
+        }
+
+        public static string[] ReadCategories()
+        {
+            List<string> rawCategories = FileIO.GetFile("config", "CATEGORIES");
+            string[] categories = rawCategories.ToArray();
+            foreach (string c in categories)
+            {
+                FileIO.CategoryDirectoryCheck(c);
+            }
+            return categories;            
         }
 
 

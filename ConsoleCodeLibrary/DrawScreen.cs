@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Drawing;
+
+
+
+
 
 namespace ConsoleCodeLibrary
 {
@@ -17,7 +16,14 @@ namespace ConsoleCodeLibrary
         public static int MainVerticalBorderLocation { get; set; }
         public static char MainHorizontalBorderCharacter { get; set; }
         public static char MainVerticalBorderCharacter { get; set; }
-        public static ColorProfile Colors { get; set; }
+        public static int MaxListLength { get; set; }
+        public ColorProfile Colors { get; set; }
+        public string CategoryName { get; set; }
+        public int Page { get; set; }
+        public int Selection { get; set; }
+        public string[] FileList { get; set; }
+        public int ListStatus { get; set; }
+
 
         //Default Constructor
         public DrawScreen()
@@ -25,7 +31,7 @@ namespace ConsoleCodeLibrary
 
         }
         //Constructor
-        public DrawScreen(int[] _screenParams, ColorProfile _colors)
+        public DrawScreen(int[] _screenParams, ColorProfile _colors, string _categoryName, string[] _fileList)
         {
             XMax = _screenParams[0];
             YMax = _screenParams[1];
@@ -35,47 +41,53 @@ namespace ConsoleCodeLibrary
             MainVerticalBorderLocation = 31;
             MainHorizontalBorderCharacter = '=';
             MainVerticalBorderCharacter = '|';
+            MaxListLength = 0;
             Colors = _colors;
+            CategoryName = _categoryName;
+            Page = 0;
+            Selection = 0;
+            FileList = _fileList;
+            ListStatus = 0;
         }
 
-        public void MoveListSelection (int selection, bool up, string previousListItem, string selectedListItem)
+        public void MoveListSelection(bool up)
         {
 
-            Console.SetCursorPosition(XListStart, YListStart + selection);
+            Console.SetCursorPosition(XListStart, YListStart + Selection);
             Console.Write("                              ");
-            Console.SetCursorPosition(XListStart, YListStart + selection);
+            Console.SetCursorPosition(XListStart, YListStart + Selection);
             Console.ForegroundColor = Colors.ListTextHighlight;
             Console.BackgroundColor = Colors.ListTextHighlightBackground;
-            Console.Write(selectedListItem);
+            Console.Write(FileList[Selection + (MaxListLength * Page)]);
             Console.ResetColor();
 
             Console.ForegroundColor = Colors.ListText;
             if (up)
             {
-                Console.SetCursorPosition(XListStart, YListStart + selection + 1);
+                Console.SetCursorPosition(XListStart, YListStart + Selection + 1);
                 Console.Write("                              ");
-                Console.SetCursorPosition(XListStart, YListStart + selection + 1);
-                Console.Write(previousListItem);
+                Console.SetCursorPosition(XListStart, YListStart + Selection + 1);
+                Console.Write(FileList[Selection + (MaxListLength * Page) + 1]);
             }
             else
             {
-                Console.SetCursorPosition(XListStart, YListStart + selection - 1);
+                Console.SetCursorPosition(XListStart, YListStart + Selection - 1);
                 Console.Write("                              ");
-                Console.SetCursorPosition(XListStart, YListStart + selection - 1);
-                Console.Write(previousListItem);
+                Console.SetCursorPosition(XListStart, YListStart + Selection - 1);
+                Console.Write(FileList[Selection + (MaxListLength * Page) - 1]);
             }
             Console.ResetColor();
         }
 
-        public int PrintList (int page, string[] names)
+        public void PrintList ()//int page, string[] names)
         {
             //Returns -1 when on the last page of the list. Controller will break on a -1 when PgDn is pressed here disallowing further scrolling.
             //Returns 1 when on the first page of the list. Controller will break on a 1 when PgUp is pressed here disallowing further scrolling.
             //Returns 0 otherwise, allowing scrolling either way.
             //Returns 2 if the list is too small for scrolling
 
-            int listMaxLength = YMax - YListStart - 1;
-            int listStartIndex = listMaxLength * page;
+            
+            int listStartIndex = MaxListLength * Page;
 
             //clear list on display
             for (int i = YListStart; i < YMax; i++)
@@ -87,57 +99,61 @@ namespace ConsoleCodeLibrary
             for (int i = YListStart, j = listStartIndex; i < YMax; i++, j++)
             {
                 Console.SetCursorPosition(XListStart, i);
-                if (j == names.Length)  //If end of index is reached
+                if (j == FileList.Length)  //If end of index is reached
                 {
                     Console.SetCursorPosition(XListStart, YMax - 1);
-                    if(page == 0) 
+                    if(Page == 0) 
                     {
-                        return 2;
+                        ListStatus = 2;
+                        return;
                     }
                     else
                     {
                         Console.BackgroundColor = Colors.MenuTextBackground;
                         Console.ForegroundColor = Colors.MenuText;
-                        Console.Write($"PAGE {page + 1} PgUp: Prev             ");
+                        Console.Write($"PAGE {Page + 1} PgUp: Prev             ");
                         Console.ResetColor();
-                        return -1;
+                        ListStatus = -1;
+                        return;
                     }
 
                 }
                 
-                if(j == listStartIndex + listMaxLength) //If end of display length is reached
+                if(j == listStartIndex + MaxListLength) //If end of display length is reached
                 {
-                    if (page == 0)
+                    if (Page == 0)
                     {
                         Console.BackgroundColor = Colors.MenuTextBackground;
                         Console.ForegroundColor = Colors.MenuText;
-                        Console.Write($"PAGE {page + 1}              PgDn: Next");
+                        Console.Write($"PAGE {Page + 1}              PgDn: Next");
                         Console.ResetColor();
-                        return 1;
+                        ListStatus = 1;
+                        return;
                     }
                     else
                     {
                         Console.BackgroundColor = Colors.MenuTextBackground;
                         Console.ForegroundColor = Colors.MenuText;
-                        Console.Write($"PAGE {page + 1} PgUp: Prev / PgDn: Next");
+                        Console.Write($"PAGE {Page + 1} PgUp: Prev / PgDn: Next");
                         Console.ResetColor();
-                        return 0;
+                        ListStatus = 0;
+                        return;
                     }
                 }
                 Console.ForegroundColor = Colors.ListText;
-                Console.Write(names[j]);
+                Console.Write(FileList[j]);
             }
-            return 0;
+            ListStatus = 0;
+            return;
         }
-        public int DrawBorders ()
+        public void DrawBorders ()
         {
             Console.ForegroundColor = Colors.Border;
             VerticleBorder(YMax, MainVerticalBorderLocation, MainHorizontalBorderLocation, MainVerticalBorderCharacter);
             HorizontalBorder(XMax, MainHorizontalBorderLocation, MainHorizontalBorderCharacter);
             Console.ResetColor();
 
-            int displayLinesAvailable = YMax - 1 - 1 - MainHorizontalBorderLocation;
-            return displayLinesAvailable;
+            MaxListLength = YMax - 1 - 1 - MainHorizontalBorderLocation;
         }
         public static void VerticleBorder(int height, int vertLocation, int horizLocation, char character)
         {

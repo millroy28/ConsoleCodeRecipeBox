@@ -1,4 +1,4 @@
-﻿using AsyncWindowsClipboard;
+﻿
 using System;
 
 
@@ -23,11 +23,6 @@ namespace ConsoleCodeLibrary
             Controller.Run(consoleSize);
             
             
-            
-            
-            
-            
-            
             /*
             Console.WriteLine("Hello World!");
             string message = "Check your clipboard for this text!";
@@ -35,35 +30,8 @@ namespace ConsoleCodeLibrary
 
             var clipboardService = new WindowsClipboardService(timeout:TimeSpan.FromMilliseconds(200));
             clipboardService.SetTextAsync(message);
-
-            Console.WriteLine("Press ESC to change screen and font size to desire default");
-            do
-            {
-                while (!Console.KeyAvailable)
-                {
-                    // Do something
-                }
-            } while (Console.ReadKey(true).Key != ConsoleKey.Escape);
-
-            Console.WriteLine(Console.LargestWindowHeight);
-            Console.WriteLine(Console.LargestWindowWidth);
-
-            InitializeConsoleDisplay.SetDisplayAndFontSize();
-            
-            Console.WriteLine(Console.LargestWindowHeight);
-            Console.WriteLine(Console.LargestWindowWidth);
-
-
-            Console.WriteLine("Press ESC to end");
-            do
-            {
-                while (!Console.KeyAvailable)
-                {
-                    // Do something
-                }
-            } while (Console.ReadKey(true).Key != ConsoleKey.Escape);
-            //FileIO.FileRead(null, null, "blut");
             */
+            
         }
     }
 }

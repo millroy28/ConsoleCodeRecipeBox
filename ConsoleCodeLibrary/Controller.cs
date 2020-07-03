@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Transactions;
+
 
 namespace ConsoleCodeLibrary
 {
@@ -9,21 +8,25 @@ namespace ConsoleCodeLibrary
     {
         public static void Run(int[] consoleSize)
         {
-            ColorProfile ingredientCP = ReadFile.ReadColorProfile("ingredient");
+            string[] categories = ReadFile.ReadCategories();
+            List<ColorProfile> colors = new List<ColorProfile>();
+            List<DrawScreen> draws = new List<DrawScreen>();
+            List<string[]> fileLists = new List<string[]>();
 
-            DrawScreen ingredientDraw = new DrawScreen(consoleSize, ingredientCP);
-            int page = 0;
-            int selection = 0;
-            int maxLinesInDisplay = ingredientDraw.DrawBorders();
-
-            string[] ingredientFiles = FileIO.GetFileList("ingredients");
-            string[] recipeFiles = FileIO.GetFileList("recipies");
-
-            int listStatus = ingredientDraw.PrintList(page, ingredientFiles);
-
-            ColorProfile ingredientColorProfile = new ColorProfile();
-            string test = "Yellow";
-            ingredientColorProfile.Border = (ConsoleColor) Enum.Parse(typeof(ConsoleColor), test);
+            foreach (string c in categories)
+            {
+                fileLists.Add(FileIO.GetFileList(c));
+                colors.Add(ReadFile.ReadColorProfile(c));
+            }
+         
+            for (int i = 0; i<categories.Length; i++)
+            {
+                draws.Add(new DrawScreen(consoleSize, colors[i], categories[i], fileLists[i]));
+            }
+            int category = 0;
+            int maxCategory = categories.Length -1;
+            draws[category].DrawBorders();
+            draws[category].PrintList();
 
             do
             {
@@ -37,6 +40,19 @@ namespace ConsoleCodeLibrary
                     case ConsoleKey.Backspace:
                         break;
                     case ConsoleKey.Tab:
+                        if(category < maxCategory)
+                        {
+                            category++;
+                            draws[category].DrawBorders();
+                            draws[category].PrintList();
+                        }   
+                        else
+                        {
+                            category = 0;
+                            draws[category].DrawBorders();
+                            draws[category].PrintList();
+                        }
+                      
                         break;
                     case ConsoleKey.Clear:
                         break;
@@ -49,27 +65,27 @@ namespace ConsoleCodeLibrary
                     case ConsoleKey.Spacebar:
                         break;
                     case ConsoleKey.PageUp:
-                        if (listStatus == 1 || listStatus == 2)
+                        if (draws[category].ListStatus == 1 || draws[category].ListStatus == 2)
                         {
                             break;
                         }
                         else
                         {
-                            selection = 0;
-                            page--;
-                            listStatus = ingredientDraw.PrintList(page, ingredientFiles);
+                            draws[category].Selection = 0;
+                            draws[category].Page--;
+                            draws[category].PrintList();
                             break;
                         }
                     case ConsoleKey.PageDown:
-                        if(listStatus== -1 || listStatus == 2)
+                        if(draws[category].ListStatus == -1 || draws[category].ListStatus == 2)
                         {
                             break;
                         }
                         else
                         {
-                            selection = 0;
-                            page++;
-                            listStatus = ingredientDraw.PrintList(page, ingredientFiles);
+                            draws[category].Selection = 0;
+                            draws[category].Page++;
+                            draws[category].PrintList();
                             break;
                         }
                     case ConsoleKey.End:
@@ -79,28 +95,28 @@ namespace ConsoleCodeLibrary
                     case ConsoleKey.LeftArrow:
                         break;
                     case ConsoleKey.UpArrow:
-                        if(selection == 0)
+                        if(draws[category].Selection == 0)
                         {
                             break;
                         }
                         else
                         {
-                            selection--;
-                            ingredientDraw.MoveListSelection(selection, true, ingredientFiles[selection + (maxLinesInDisplay * page) + 1], ingredientFiles[selection + (maxLinesInDisplay * page)]);
+                            draws[category].Selection--;
+                            draws[category].MoveListSelection(true);
                             break;
                         }
 
                     case ConsoleKey.RightArrow:
                         break;
                     case ConsoleKey.DownArrow:
-                        if (selection == maxLinesInDisplay - 1 || selection + (maxLinesInDisplay * page) >= ingredientFiles.Length - 1 )
+                        if (draws[category].Selection == DrawScreen.MaxListLength - 1 || draws[category].Selection + (DrawScreen.MaxListLength * draws[category].Page) >= draws[category].FileList.Length - 1 )
                         {
                             break;
                         }
                         else
                         {
-                            selection++;
-                            ingredientDraw.MoveListSelection(selection, false, ingredientFiles[selection + (maxLinesInDisplay * page) - 1], ingredientFiles[selection + (maxLinesInDisplay * page)]);
+                            draws[category].Selection++;
+                            draws[category].MoveListSelection(false);
                             break;
                         }
                     case ConsoleKey.Select:
