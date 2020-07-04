@@ -76,6 +76,31 @@ namespace ConsoleCodeLibrary
             return categories;            
         }
 
+        public static string[] ReadFileTitles(string category)
+        {
+            //DrawScreen tempDraw = new DrawScreen();
+            int maxTitleLength = 30;  // DrawScreen.MainVerticalBorderLocation - 1;
+            string[] fileList = FileIO.GetFileList(category);
+            string[] titles = new string[fileList.Length];
+            for (int i = 0; i < fileList.Length; i++)
+            {
+                string title = FileIO.GetFirstLine(fileList[i]);
+                if(title.StartsWith(TitleBeginAndEnd) && title.EndsWith(TitleBeginAndEnd))
+                {
+                    char[] titleChars = title.ToCharArray();
+                    string cleanTitle = "";
+                    for (int j = 0; j < titleChars.Length; j++)
+                    {
+                        if(titleChars[j] != TitleBeginAndEnd && j < maxTitleLength)
+                        {
+                            cleanTitle += titleChars[j].ToString();
+                        }
+                    }
+                    titles[i] = cleanTitle;
+                }
+            }
+            return titles;
+        }
 
 
     }

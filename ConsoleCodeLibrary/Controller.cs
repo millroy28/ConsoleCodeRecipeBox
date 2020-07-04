@@ -11,17 +11,17 @@ namespace ConsoleCodeLibrary
             string[] categories = ReadFile.ReadCategories();
             List<ColorProfile> colors = new List<ColorProfile>();
             List<DrawScreen> draws = new List<DrawScreen>();
-            List<string[]> fileLists = new List<string[]>();
+            List<string[]> titles = new List<string[]>();
 
             foreach (string c in categories)
             {
-                fileLists.Add(FileIO.GetFileList(c));
+                titles.Add(ReadFile.ReadFileTitles(c));
                 colors.Add(ReadFile.ReadColorProfile(c));
             }
          
             for (int i = 0; i<categories.Length; i++)
             {
-                draws.Add(new DrawScreen(consoleSize, colors[i], categories[i], fileLists[i]));
+                draws.Add(new DrawScreen(consoleSize, colors[i], categories[i], titles[i]));
             }
             int category = 0;
             int maxCategory = categories.Length -1;

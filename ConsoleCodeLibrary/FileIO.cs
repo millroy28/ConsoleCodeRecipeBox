@@ -21,6 +21,14 @@ namespace ConsoleCodeLibrary
             return fileContents;
         }
 
+        public static string GetFirstLine(string filePath)
+        {
+            StreamReader reader = new StreamReader(filePath);
+            string line = reader.ReadLine();
+            reader.Close();
+            return line;
+        }
+
         public static string[] GetFileList(string directory)
         {
             string[] fileList = Directory.GetFiles($"../../../{directory}/");

@@ -1,9 +1,5 @@
 ﻿using System;
 
-
-
-
-
 namespace ConsoleCodeLibrary
 {
     class DrawScreen
@@ -28,7 +24,12 @@ namespace ConsoleCodeLibrary
         //Default Constructor
         public DrawScreen()
         {
-
+            //XListStart = 1;
+            //YListStart = 2;
+            //MainHorizontalBorderLocation = 1;
+            //MainVerticalBorderLocation = 31;
+            //MainHorizontalBorderCharacter = '=';
+            //MainVerticalBorderCharacter = '|';
         }
         //Constructor
         public DrawScreen(int[] _screenParams, ColorProfile _colors, string _categoryName, string[] _fileList)
