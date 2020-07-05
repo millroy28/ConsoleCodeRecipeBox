@@ -13,6 +13,8 @@ namespace ConsoleCodeLibrary
             List<DrawScreen> draws = new List<DrawScreen>();
             List<string[]> titles = new List<string[]>();
 
+
+            
             foreach (string c in categories)
             {
                 titles.Add(ReadFile.ReadFileTitles(c));
@@ -27,6 +29,8 @@ namespace ConsoleCodeLibrary
             int maxCategory = categories.Length -1;
             draws[category].DrawBorders();
             draws[category].PrintList();
+
+
 
             do
             {
@@ -48,7 +52,7 @@ namespace ConsoleCodeLibrary
                         }   
                         else
                         {
-                            category = 0;
+                            category = 1; // index 0 is reserved for "help" articles
                             draws[category].DrawBorders();
                             draws[category].PrintList();
                         }
@@ -246,6 +250,10 @@ namespace ConsoleCodeLibrary
                     case ConsoleKey.Divide:
                         break;
                     case ConsoleKey.F1:
+                        //Displays "help" category (index 0);
+                        category = 0; // index 0 is reserved for "help" articles
+                        draws[category].DrawBorders();
+                        draws[category].PrintList();
                         break;
                     case ConsoleKey.F2:
                         break;
