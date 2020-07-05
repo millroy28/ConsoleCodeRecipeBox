@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 
 namespace ConsoleCodeLibrary
 {
@@ -152,6 +153,7 @@ namespace ConsoleCodeLibrary
             Console.ForegroundColor = Colors.Border;
             VerticleBorder(YMax, MainVerticalBorderLocation, MainHorizontalBorderLocation, MainVerticalBorderCharacter);
             HorizontalBorder(XMax, MainHorizontalBorderLocation, MainHorizontalBorderCharacter);
+            PrintCategoryTitle(Colors.TitleText, CategoryName);
             Console.ResetColor();
 
             MaxListLength = YMax - 1 - 1 - MainHorizontalBorderLocation;
@@ -171,6 +173,14 @@ namespace ConsoleCodeLibrary
                 Console.SetCursorPosition(i, location);
                 Console.Write(character);
             }
+        }
+
+        public static void PrintCategoryTitle(ConsoleColor color, string category)
+        {
+            Console.ForegroundColor = color;
+            Console.SetCursorPosition(2, MainHorizontalBorderLocation);
+            Console.Write(category.ToUpper());
+            Console.ResetColor();
         }
        
     }
