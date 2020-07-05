@@ -11,19 +11,18 @@ namespace ConsoleCodeLibrary
             string[] categories = ReadFile.ReadCategories();
             List<ColorProfile> colors = new List<ColorProfile>();
             List<DrawScreen> draws = new List<DrawScreen>();
-            List<string[]> titles = new List<string[]>();
-
+            List<List<KeyValuePair<string, string>>> fileNamesAndTitles = new List<List<KeyValuePair<string, string>>>();
 
             
             foreach (string c in categories)
             {
-                titles.Add(ReadFile.ReadFileTitles(c));
+                fileNamesAndTitles.Add(ReadFile.ReadFileTitles(c));
                 colors.Add(ReadFile.ReadColorProfile(c));
             }
          
             for (int i = 0; i<categories.Length; i++)
             {
-                draws.Add(new DrawScreen(consoleSize, colors[i], categories[i], titles[i]));
+                draws.Add(new DrawScreen(consoleSize, colors[i], categories[i], fileNamesAndTitles[i]));
             }
             int category = 0;
             int maxCategory = categories.Length -1;
@@ -113,7 +112,7 @@ namespace ConsoleCodeLibrary
                     case ConsoleKey.RightArrow:
                         break;
                     case ConsoleKey.DownArrow:
-                        if (draws[category].Selection == DrawScreen.MaxListLength - 1 || draws[category].Selection + (DrawScreen.MaxListLength * draws[category].Page) >= draws[category].FileList.Length - 1 )
+                        if (draws[category].Selection == DrawScreen.MaxListLength - 1 || draws[category].Selection + (DrawScreen.MaxListLength * draws[category].Page) >= draws[category].FilesAndTitles.Count - 1 )
                         {
                             break;
                         }

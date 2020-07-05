@@ -76,12 +76,14 @@ namespace ConsoleCodeLibrary
             return categories;            
         }
 
-        public static string[] ReadFileTitles(string category)
+        public static List<KeyValuePair<string, string>> ReadFileTitles(string category)
         {
             //DrawScreen tempDraw = new DrawScreen();
             int maxTitleLength = 30;  // DrawScreen.MainVerticalBorderLocation - 1;
             string[] fileList = FileIO.GetFileList(category);
             string[] titles = new string[fileList.Length];
+            List<KeyValuePair<string, string>> fileNamesAndTitles = new List<KeyValuePair<string, string>>();
+
             for (int i = 0; i < fileList.Length; i++)
             {
                 string title = FileIO.GetFirstLine(fileList[i]);
@@ -96,10 +98,11 @@ namespace ConsoleCodeLibrary
                             cleanTitle += titleChars[j].ToString();
                         }
                     }
-                    titles[i] = cleanTitle;
+                    fileNamesAndTitles.Add(new KeyValuePair<string,string>(fileList[i], cleanTitle));
+                    
                 }
             }
-            return titles;
+            return fileNamesAndTitles;
         }
 
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace ConsoleCodeLibrary
@@ -18,7 +19,7 @@ namespace ConsoleCodeLibrary
         public string CategoryName { get; set; }
         public int Page { get; set; }
         public int Selection { get; set; }
-        public string[] FileList { get; set; }
+        public List<KeyValuePair<string, string>> FilesAndTitles { get; set; }
         public int ListStatus { get; set; }
 
 
@@ -33,7 +34,7 @@ namespace ConsoleCodeLibrary
             //MainVerticalBorderCharacter = '|';
         }
         //Constructor
-        public DrawScreen(int[] _screenParams, ColorProfile _colors, string _categoryName, string[] _fileList)
+        public DrawScreen(int[] _screenParams, ColorProfile _colors, string _categoryName, List<KeyValuePair<string, string>> _filesAndTitles)
         {
             XMax = _screenParams[0];
             YMax = _screenParams[1];
@@ -48,7 +49,7 @@ namespace ConsoleCodeLibrary
             CategoryName = _categoryName;
             Page = 0;
             Selection = 0;
-            FileList = _fileList;
+            FilesAndTitles = _filesAndTitles;
             ListStatus = 0;
         }
 
@@ -60,7 +61,7 @@ namespace ConsoleCodeLibrary
             Console.SetCursorPosition(XListStart, YListStart + Selection);
             Console.ForegroundColor = Colors.ListTextHighlight;
             Console.BackgroundColor = Colors.ListTextHighlightBackground;
-            Console.Write(FileList[Selection + (MaxListLength * Page)]);
+            Console.Write(FilesAndTitles[Selection + (MaxListLength * Page)].Value);
             Console.ResetColor();
 
             Console.ForegroundColor = Colors.ListText;
@@ -69,14 +70,14 @@ namespace ConsoleCodeLibrary
                 Console.SetCursorPosition(XListStart, YListStart + Selection + 1);
                 Console.Write("                              ");
                 Console.SetCursorPosition(XListStart, YListStart + Selection + 1);
-                Console.Write(FileList[Selection + (MaxListLength * Page) + 1]);
+                Console.Write(FilesAndTitles[Selection + (MaxListLength * Page) + 1].Value);
             }
             else
             {
                 Console.SetCursorPosition(XListStart, YListStart + Selection - 1);
                 Console.Write("                              ");
                 Console.SetCursorPosition(XListStart, YListStart + Selection - 1);
-                Console.Write(FileList[Selection + (MaxListLength * Page) - 1]);
+                Console.Write(FilesAndTitles[Selection + (MaxListLength * Page) - 1].Value);
             }
             Console.ResetColor();
         }
@@ -101,7 +102,7 @@ namespace ConsoleCodeLibrary
             for (int i = YListStart, j = listStartIndex; i < YMax; i++, j++)
             {
                 Console.SetCursorPosition(XListStart, i);
-                if (j == FileList.Length)  //If end of index is reached
+                if (j == FilesAndTitles.Count)  //If end of index is reached
                 {
                     Console.SetCursorPosition(XListStart, YMax - 1);
                     if(Page == 0) 
@@ -143,7 +144,7 @@ namespace ConsoleCodeLibrary
                     }
                 }
                 Console.ForegroundColor = Colors.ListText;
-                Console.Write(FileList[j]);
+                Console.Write(FilesAndTitles[j].Value);
             }
             ListStatus = 0;
             return;
@@ -181,6 +182,11 @@ namespace ConsoleCodeLibrary
             Console.SetCursorPosition(2, MainHorizontalBorderLocation);
             Console.Write(category.ToUpper());
             Console.ResetColor();
+        }
+
+        public void PrintFile(int selection)
+        {
+            
         }
        
     }
