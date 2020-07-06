@@ -20,6 +20,20 @@ namespace ConsoleCodeLibrary
             reader.Close();
             return fileContents;
         }
+        public static List<string> GetFile(string filePath)
+        {
+            StreamReader reader = new StreamReader(filePath);
+            string line = reader.ReadLine();
+            List<string> fileContents = new List<string>();
+            do
+            {
+                fileContents.Add(line);
+                line = reader.ReadLine();
+            } while (line != null);
+            reader.Close();
+            return fileContents;
+        }
+
 
         public static string GetFirstLine(string filePath)
         {

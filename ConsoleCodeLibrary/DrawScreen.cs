@@ -17,10 +17,12 @@ namespace ConsoleCodeLibrary
         public static int MaxListLength { get; set; }
         public ColorProfile Colors { get; set; }
         public string CategoryName { get; set; }
-        public int Page { get; set; }
+        public int ListPage { get; set; }
         public int Selection { get; set; }
+        public int ContentPage { get; set; }
         public List<KeyValuePair<string, string>> FilesAndTitles { get; set; }
         public int ListStatus { get; set; }
+        public List<NoteObject> Snippets { get; set; }
 
 
         //Default Constructor
@@ -34,7 +36,7 @@ namespace ConsoleCodeLibrary
             //MainVerticalBorderCharacter = '|';
         }
         //Constructor
-        public DrawScreen(int[] _screenParams, ColorProfile _colors, string _categoryName, List<KeyValuePair<string, string>> _filesAndTitles)
+        public DrawScreen(int[] _screenParams, ColorProfile _colors, string _categoryName, List<KeyValuePair<string, string>> _filesAndTitles, List<NoteObject> _snippets)
         {
             XMax = _screenParams[0];
             YMax = _screenParams[1];
@@ -47,10 +49,12 @@ namespace ConsoleCodeLibrary
             MaxListLength = 0;
             Colors = _colors;
             CategoryName = _categoryName;
-            Page = 0;
+            ListPage = 0;
             Selection = 0;
+            ContentPage = 0;
             FilesAndTitles = _filesAndTitles;
             ListStatus = 0;
+            Snippets = _snippets;
         }
 
         public void MoveListSelection(bool up)
@@ -61,7 +65,7 @@ namespace ConsoleCodeLibrary
             Console.SetCursorPosition(XListStart, YListStart + Selection);
             Console.ForegroundColor = Colors.ListTextHighlight;
             Console.BackgroundColor = Colors.ListTextHighlightBackground;
-            Console.Write(FilesAndTitles[Selection + (MaxListLength * Page)].Value);
+            Console.Write(FilesAndTitles[Selection + (MaxListLength * ListPage)].Value);
             Console.ResetColor();
 
             Console.ForegroundColor = Colors.ListText;
@@ -70,14 +74,14 @@ namespace ConsoleCodeLibrary
                 Console.SetCursorPosition(XListStart, YListStart + Selection + 1);
                 Console.Write("                              ");
                 Console.SetCursorPosition(XListStart, YListStart + Selection + 1);
-                Console.Write(FilesAndTitles[Selection + (MaxListLength * Page) + 1].Value);
+                Console.Write(FilesAndTitles[Selection + (MaxListLength * ListPage) + 1].Value);
             }
             else
             {
                 Console.SetCursorPosition(XListStart, YListStart + Selection - 1);
                 Console.Write("                              ");
                 Console.SetCursorPosition(XListStart, YListStart + Selection - 1);
-                Console.Write(FilesAndTitles[Selection + (MaxListLength * Page) - 1].Value);
+                Console.Write(FilesAndTitles[Selection + (MaxListLength * ListPage) - 1].Value);
             }
             Console.ResetColor();
         }
@@ -90,7 +94,7 @@ namespace ConsoleCodeLibrary
             //Returns 2 if the list is too small for scrolling
 
             
-            int listStartIndex = MaxListLength * Page;
+            int listStartIndex = MaxListLength * ListPage;
 
             //clear list on display
             for (int i = YListStart; i < YMax; i++)
@@ -105,7 +109,7 @@ namespace ConsoleCodeLibrary
                 if (j == FilesAndTitles.Count)  //If end of index is reached
                 {
                     Console.SetCursorPosition(XListStart, YMax - 1);
-                    if(Page == 0) 
+                    if(ListPage == 0) 
                     {
                         ListStatus = 2;
                         return;
@@ -114,7 +118,7 @@ namespace ConsoleCodeLibrary
                     {
                         Console.BackgroundColor = Colors.MenuTextBackground;
                         Console.ForegroundColor = Colors.MenuText;
-                        Console.Write($"PAGE {Page + 1} PgUp: Prev             ");
+                        Console.Write($"PAGE {ListPage + 1} PgUp: Prev             ");
                         Console.ResetColor();
                         ListStatus = -1;
                         return;
@@ -124,11 +128,11 @@ namespace ConsoleCodeLibrary
                 
                 if(j == listStartIndex + MaxListLength) //If end of display length is reached
                 {
-                    if (Page == 0)
+                    if (ListPage == 0)
                     {
                         Console.BackgroundColor = Colors.MenuTextBackground;
                         Console.ForegroundColor = Colors.MenuText;
-                        Console.Write($"PAGE {Page + 1}              PgDn: Next");
+                        Console.Write($"PAGE {ListPage + 1}              PgDn: Next");
                         Console.ResetColor();
                         ListStatus = 1;
                         return;
@@ -137,7 +141,7 @@ namespace ConsoleCodeLibrary
                     {
                         Console.BackgroundColor = Colors.MenuTextBackground;
                         Console.ForegroundColor = Colors.MenuText;
-                        Console.Write($"PAGE {Page + 1} PgUp: Prev / PgDn: Next");
+                        Console.Write($"PAGE {ListPage + 1} PgUp: Prev / PgDn: Next");
                         Console.ResetColor();
                         ListStatus = 0;
                         return;
@@ -151,6 +155,7 @@ namespace ConsoleCodeLibrary
         }
         public void DrawBorders ()
         {
+            ClearContentWindow();
             Console.ForegroundColor = Colors.Border;
             VerticleBorder(YMax, MainVerticalBorderLocation, MainHorizontalBorderLocation, MainVerticalBorderCharacter);
             HorizontalBorder(XMax, MainHorizontalBorderLocation, MainHorizontalBorderCharacter);
@@ -184,10 +189,99 @@ namespace ConsoleCodeLibrary
             Console.ResetColor();
         }
 
-        public void PrintFile(int selection)
+        public void PrintContentsHeader()
         {
+            ClearContentWindow();
+            int index = Selection + (MaxListLength * ListPage);
             
+            //Print Title
+            Console.ForegroundColor = Colors.TitleText;
+            string title = Snippets[index].Title;
+            int titleStartX = ((XMax - MainVerticalBorderLocation-title.Length) / 2) + MainVerticalBorderLocation;
+            int titleStartY = MainHorizontalBorderLocation + 1;
+            Console.SetCursorPosition(titleStartX, titleStartY);
+            Console.Write(title);
+
+            //Print Languages & Keywords
+            Console.ForegroundColor = Colors.PropertyText;
+            string languages = "";
+            for (int i = 0; i < Snippets[index].Language.Length; i++)
+            {
+                languages += Snippets[index].Language[i];
+                if(i + 1 < Snippets[index].Language.Length)
+                {
+                    languages += ", ";
+                }
+            }
+            int languageStartX = MainVerticalBorderLocation + 2;
+            int languageStartY = MainHorizontalBorderLocation + 2;
+            Console.SetCursorPosition(languageStartX, languageStartY);
+            Console.Write(languages);
+
+            string keywords = "";
+            for (int i = 0; i < Snippets[index].Keywords.Length; i++)
+            {
+                keywords += Snippets[index].Keywords[i];
+                if (i + 1 < Snippets[index].Keywords.Length)
+                {
+                    keywords += ", ";
+                }
+            }
+            int keywordsStartX = XMax - (keywords.Length + 2);
+            int keywordsStartY = MainHorizontalBorderLocation + 2;
+            Console.SetCursorPosition(keywordsStartX, keywordsStartY);
+            Console.Write(keywords);
+
+            //Draw content bottom border
+            Console.ForegroundColor = Colors.Border;
+            int secondaryBorderStartX = MainVerticalBorderLocation + 1;
+            int secondaryBorderStartY = MainHorizontalBorderLocation + 3;
+            for (int i = secondaryBorderStartX; i < XMax; i++)
+            {
+                Console.SetCursorPosition(i, secondaryBorderStartY);
+                Console.Write("-");
+            }
+
+            PrintContentsBody(index);            
         }
-       
+
+        public void PrintContentsBody(int index)
+        {
+            //prints first contents page
+            Console.ForegroundColor = Colors.ContentText;
+            int x = MainVerticalBorderLocation + 3;
+            int y = MainHorizontalBorderLocation + 5;
+
+            foreach (string s in Snippets[index].Contents[0].ContentBlock)
+            {
+                if (s == ReadFile.BeginCodeSection)
+                {
+                    Console.ForegroundColor = Colors.CopyText;
+                }
+                else if (s == ReadFile.EndCodeSection)
+                {
+                    Console.ForegroundColor = Colors.ContentText;
+                }
+                else
+                {
+                    Console.SetCursorPosition(x, y);
+                    Console.Write(s);
+                    y++;
+                }
+            }
+            Console.ResetColor();
+        }
+        public void ClearContentWindow()
+        {
+            for(int y = MainHorizontalBorderLocation + 1; y < YMax; y++)
+            {
+                for(int x = MainVerticalBorderLocation + 1; x < XMax; x++)
+                {
+                    Console.SetCursorPosition(x, y);
+                    Console.Write(" ");
+                }
+            }
+        }
+
     }
 }

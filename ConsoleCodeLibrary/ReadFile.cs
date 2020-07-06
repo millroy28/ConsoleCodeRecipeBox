@@ -1,7 +1,9 @@
 ﻿
 using System;
 using System.Collections.Generic;
-
+using System.IO;
+using System.Reflection.Metadata.Ecma335;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace ConsoleCodeLibrary
 {
@@ -13,13 +15,124 @@ namespace ConsoleCodeLibrary
         public const char KeywordsEnd = '>';
         public const char LanguageBegin = '[';
         public const char LanguageEnd = ']';
-        public const string BeginCodeSection = ":::Code:::";
+        public const string BeginContentSection = ":CONTENT:";
+        public const string BeginCodeSection = ":CODE:";
+        public const string EndCodeSection = ":ENDCODE:";
 
-        //public static List<string> GetFileContents(string fileName)
-        //{
-        //    List<string> rawFileContents = FileIO.GetFile(fileName);
-        //    return rawFileContents;
-        //}
+        
+        public static List<string[]> ReadFileContents(string filePath)
+        {
+            List<string> rawFileContents = FileIO.GetFile(filePath);
+            List<string[]> parsedContents = new List<string[]>();
+            parsedContents.Add(ParseFileTitle(rawFileContents));
+            parsedContents.Add(ParseFileLanguage(rawFileContents));
+            parsedContents.Add(ParseFileKeywords(rawFileContents));
+            parsedContents.Add(ParseFileContents(rawFileContents));
+            return parsedContents;
+        }
+
+        public static NoteObject ParseAndReturnSnippet(string filePath)
+        {   //List should contain 4 elements: Title, Languages, Keywords, Content
+            List<string[]> fileContent = ReadFileContents(filePath);
+            string copyableCode = "";
+            bool codeTag = false;
+            foreach (string s in fileContent[2])
+            {
+                if(s == BeginCodeSection)
+                {
+                    codeTag = true;
+                    continue;
+                } 
+                else if (s == EndCodeSection)
+                {
+                    codeTag = false;
+                    continue;
+                }
+                if (codeTag)
+                {
+                    copyableCode += s + '\n';
+                }
+            }
+            List<ContentCopyPair> contents = new List<ContentCopyPair>();
+            contents.Add(new ContentCopyPair(fileContent[3], copyableCode));
+            
+            string title = "";          //converting title from string array (with one element, granted) to string
+            foreach(string s in fileContent[0])
+            {
+                title += s;
+            }
+            NoteObject snippet = new NoteObject
+            {
+                Title = title,
+                Language = fileContent[1],
+                Keywords = fileContent[2],
+                Contents = contents
+            };
+            return snippet;
+        }
+        public static string[] ParseFileLanguage(List<string> rawFileContents)
+        {
+            foreach (string s in rawFileContents)
+            {
+                if (s.StartsWith(LanguageBegin) && s.EndsWith(LanguageEnd))
+                {
+                    string[] languages = s.Split(',');
+                    languages[0] = languages[0].Replace(LanguageBegin.ToString(), "");
+                    languages[languages.Length - 1] = languages[languages.Length - 1].Replace(LanguageEnd.ToString(), "");
+                    return languages;
+                }
+            }
+            string[] empty = new string[0];
+            return empty;
+        }
+        public static string[] ParseFileKeywords(List<string> rawFileContents)
+        {
+            foreach (string s in rawFileContents)
+            {
+                if (s.StartsWith(KeywordsBegin) && s.EndsWith(KeywordsEnd))
+                {
+                    string[] keywords = s.Split(',');
+                    keywords[0] = keywords[0].Replace(KeywordsBegin.ToString(), "");
+                    keywords[keywords.Length - 1] = keywords[keywords.Length - 1].Replace(KeywordsEnd.ToString(),"");
+                    return keywords;
+                }
+            }
+            string[] empty = new string[0];
+            return empty;
+        }
+        public static string[] ParseFileTitle(List<string> rawFileContents)
+        {
+            foreach (string s in rawFileContents)
+            {
+                if (s.StartsWith(TitleBeginAndEnd) && s.EndsWith(TitleBeginAndEnd))
+                {
+                    string[] title = { s };
+                    title[0] = title[0].Replace(TitleBeginAndEnd.ToString(), "");
+                    return title;
+                }
+            }
+            string[] empty = new string[0];
+            return empty;
+        }
+        public static string[] ParseFileContents(List<string> rawFileContents)
+        {
+            bool contentTag = false;
+            List<string> contentBlock = new List<string>();
+
+            foreach (string s in rawFileContents)
+            {
+                if (contentTag)
+                {
+                    contentBlock.Add(s);
+                }
+                if(s == BeginContentSection)
+                {
+                    contentTag = true;
+                }
+            }
+            string[] content = contentBlock.ToArray();
+            return content;
+        }
 
         public static ColorProfile ReadColorProfile(string fileName)
         {   //CAUTION: A change to the order of the Color Profile class & color param file will require modifying this method to avoid out of range errors

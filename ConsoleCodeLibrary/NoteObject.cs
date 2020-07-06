@@ -4,23 +4,25 @@ using System.Collections.Generic;
 
 namespace ConsoleCodeLibrary
 {
-    class CodeSnippet
+    class NoteObject
     {
         public string Title { get; set; }
-        public string Language { get; set; }
+        public string[] Language { get; set; }
         public string[] Keywords { get; set; }
-        public  List<string> CodeBlock { get; set; }
+        public List<ContentCopyPair> Contents { get; set; }
 
-        public CodeSnippet()
+
+
+        public NoteObject()
         {
         }
 
-        public CodeSnippet (string _title, string _language, string[] _keywords, List<string> _codeBlock)
+        public NoteObject (string _title, string[] _language, string[] _keywords, List<ContentCopyPair> _contents)
         {
             Title = _title;
             Language = _language;
             Keywords = _keywords;
-            CodeBlock = _codeBlock;
+            Contents = _contents;
         }
 
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-
 namespace ConsoleCodeLibrary
 {
     class Controller
@@ -12,17 +11,20 @@ namespace ConsoleCodeLibrary
             List<ColorProfile> colors = new List<ColorProfile>();
             List<DrawScreen> draws = new List<DrawScreen>();
             List<List<KeyValuePair<string, string>>> fileNamesAndTitles = new List<List<KeyValuePair<string, string>>>();
-
-            
-            foreach (string c in categories)
-            {
-                fileNamesAndTitles.Add(ReadFile.ReadFileTitles(c));
-                colors.Add(ReadFile.ReadColorProfile(c));
-            }
+            List<List<NoteObject>> allSnippets = new List<List<NoteObject>>();
          
             for (int i = 0; i<categories.Length; i++)
             {
-                draws.Add(new DrawScreen(consoleSize, colors[i], categories[i], fileNamesAndTitles[i]));
+                fileNamesAndTitles.Add(ReadFile.ReadFileTitles(categories[i]));
+                colors.Add(ReadFile.ReadColorProfile(categories[i]));
+                allSnippets.Add(new List<NoteObject>());
+                foreach(KeyValuePair<string,string> f in fileNamesAndTitles[i])
+                {
+                    string fileName = f.Key;
+                    //fileName = fileName.Replace(".", "").Replace("/","").Replace("txt","");
+                    allSnippets[i].Add(ReadFile.ParseAndReturnSnippet(f.Key));
+                }
+                draws.Add(new DrawScreen(consoleSize, colors[i], categories[i], fileNamesAndTitles[i], allSnippets[i]));
             }
             int category = 0;
             int maxCategory = categories.Length -1;
@@ -41,6 +43,7 @@ namespace ConsoleCodeLibrary
                 switch (Console.ReadKey(true).Key)
                 {
                     case ConsoleKey.Backspace:
+                        
                         break;
                     case ConsoleKey.Tab:
                         if(category < maxCategory)
@@ -60,6 +63,7 @@ namespace ConsoleCodeLibrary
                     case ConsoleKey.Clear:
                         break;
                     case ConsoleKey.Enter:
+                        draws[category].PrintContentsHeader();
                         break;
                     case ConsoleKey.Pause:
                         break;
@@ -75,7 +79,7 @@ namespace ConsoleCodeLibrary
                         else
                         {
                             draws[category].Selection = 0;
-                            draws[category].Page--;
+                            draws[category].ListPage--;
                             draws[category].PrintList();
                             break;
                         }
@@ -87,7 +91,7 @@ namespace ConsoleCodeLibrary
                         else
                         {
                             draws[category].Selection = 0;
-                            draws[category].Page++;
+                            draws[category].ListPage++;
                             draws[category].PrintList();
                             break;
                         }
@@ -112,7 +116,7 @@ namespace ConsoleCodeLibrary
                     case ConsoleKey.RightArrow:
                         break;
                     case ConsoleKey.DownArrow:
-                        if (draws[category].Selection == DrawScreen.MaxListLength - 1 || draws[category].Selection + (DrawScreen.MaxListLength * draws[category].Page) >= draws[category].FilesAndTitles.Count - 1 )
+                        if (draws[category].Selection == DrawScreen.MaxListLength - 1 || draws[category].Selection + (DrawScreen.MaxListLength * draws[category].ListPage) >= draws[category].FilesAndTitles.Count - 1 )
                         {
                             break;
                         }
@@ -395,26 +399,7 @@ namespace ConsoleCodeLibrary
 
         }
 
-        public static CodeSnippet GetSnippet(string fileName)
-        {
-            try
-            {
-                CodeSnippet welcome = ParseCodeSnippet.GetCodeSnippet(fileName);
-                return welcome;
-            }
-            catch
-            {
-                CodeSnippet welcome = new CodeSnippet();
-                welcome.Title = "ERROR!";
-                List<string> errorMessage = new List<string>()
-                {
-                "Error - Could Not Find File"
-                };
-                welcome.CodeBlock = errorMessage;
-                return welcome;
-            }
-
-        }
+        
         public static void EndProgram()
         {
             Environment.Exit(0);
