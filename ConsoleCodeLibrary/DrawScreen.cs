@@ -20,6 +20,7 @@ namespace ConsoleCodeLibrary
         public int ListPage { get; set; }
         public int Selection { get; set; }
         public int ContentPage { get; set; }
+        public int Focus { get; set; }
         public List<KeyValuePair<string, string>> FilesAndTitles { get; set; }
         public int ListStatus { get; set; }
         public List<NoteObject> Snippets { get; set; }
@@ -28,12 +29,6 @@ namespace ConsoleCodeLibrary
         //Default Constructor
         public DrawScreen()
         {
-            //XListStart = 1;
-            //YListStart = 2;
-            //MainHorizontalBorderLocation = 1;
-            //MainVerticalBorderLocation = 31;
-            //MainHorizontalBorderCharacter = '=';
-            //MainVerticalBorderCharacter = '|';
         }
         //Constructor
         public DrawScreen(int[] _screenParams, ColorProfile _colors, string _categoryName, List<KeyValuePair<string, string>> _filesAndTitles, List<NoteObject> _snippets)
@@ -52,6 +47,7 @@ namespace ConsoleCodeLibrary
             ListPage = 0;
             Selection = 0;
             ContentPage = 0;
+            Focus = 0;
             FilesAndTitles = _filesAndTitles;
             ListStatus = 0;
             Snippets = _snippets;
@@ -86,14 +82,13 @@ namespace ConsoleCodeLibrary
             Console.ResetColor();
         }
 
-        public void PrintList ()//int page, string[] names)
+        public void PrintList () //+++++++++++++++++Move the menu printing into its own method below and make it print either based on 
         {
-            //Returns -1 when on the last page of the list. Controller will break on a -1 when PgDn is pressed here disallowing further scrolling.
-            //Returns 1 when on the first page of the list. Controller will break on a 1 when PgUp is pressed here disallowing further scrolling.
-            //Returns 0 otherwise, allowing scrolling either way.
-            //Returns 2 if the list is too small for scrolling
+            //ListStatus = -1 when on the last page of the list. Controller will break on a -1 when PgDn is pressed here disallowing further scrolling.
+            //ListStatus = 1 when on the first page of the list. Controller will break on a 1 when PgUp is pressed here disallowing further scrolling.
+            //ListStatus = 0 otherwise, allowing scrolling either way.
+            //ListStatus = 2 if the list is too small for scrolling
 
-            
             int listStartIndex = MaxListLength * ListPage;
 
             //clear list on display
@@ -111,6 +106,10 @@ namespace ConsoleCodeLibrary
                     Console.SetCursorPosition(XListStart, YMax - 1);
                     if(ListPage == 0) 
                     {
+                        Console.BackgroundColor = Colors.MenuTextBackground;
+                        Console.ForegroundColor = Colors.MenuText;
+                        Console.Write($"PAGE {ListPage + 1}                        ");
+                        Console.ResetColor();
                         ListStatus = 2;
                         return;
                     }
@@ -152,6 +151,10 @@ namespace ConsoleCodeLibrary
             }
             ListStatus = 0;
             return;
+        }
+        public void DrawNavBar()
+        {
+
         }
         public void DrawBorders ()
         {
@@ -251,6 +254,7 @@ namespace ConsoleCodeLibrary
             Console.ForegroundColor = Colors.ContentText;
             int x = MainVerticalBorderLocation + 3;
             int y = MainHorizontalBorderLocation + 5;
+            int maxLineLength = XMax - x - 2;
 
             foreach (string s in Snippets[index].Contents[0].ContentBlock)
             {
@@ -262,6 +266,17 @@ namespace ConsoleCodeLibrary
                 {
                     Console.ForegroundColor = Colors.ContentText;
                 }
+                else if (s.Length > maxLineLength) //if the Line will run off the screen. Not the best code - only handles one overrun
+                {
+                    string substring1 = s.Substring(0, maxLineLength);
+                    string substring2 = s.Substring(maxLineLength);
+                    Console.SetCursorPosition(x, y);
+                    Console.Write(substring1);
+                    y++;
+                    Console.SetCursorPosition(x, y);
+                    Console.Write(substring2);
+                    y++;
+                } 
                 else
                 {
                     Console.SetCursorPosition(x, y);

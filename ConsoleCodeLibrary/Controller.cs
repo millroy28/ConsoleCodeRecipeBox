@@ -5,6 +5,17 @@ namespace ConsoleCodeLibrary
 {
     class Controller
     {
+        /*TODO List:
+         * 
+         * Add Page Up/Down on files with BREAK tag
+         * Tab to Switch context of Page Up/Down
+         * Language Select
+         * Keyword Select
+         * Copy to clipboard functionality
+         * "Menu Bar"
+         * Exit prompt
+         * 
+        */
         public static void Run(int[] consoleSize)
         {
             string[] categories = ReadFile.ReadCategories();
