@@ -25,6 +25,8 @@ namespace ConsoleCodeLibrary
         public int ListStatus { get; set; }
         public List<NoteObject> Snippets { get; set; }
 
+        public string ContentForClipboard { get; set; }
+
 
         //Default Constructor
         public DrawScreen()
@@ -51,6 +53,7 @@ namespace ConsoleCodeLibrary
             FilesAndTitles = _filesAndTitles;
             ListStatus = 0;
             Snippets = _snippets;
+            ContentForClipboard = "";
         }
 
         public void MoveListSelection(bool up)
@@ -245,29 +248,39 @@ namespace ConsoleCodeLibrary
                 Console.Write("-");
             }
 
-            PrintContentsBody(index);            
+            PrintContentsBody(index);
         }
 
         public void PrintContentsBody(int index)
         {
+            //clears content for clipboard
+            ContentForClipboard = "";
             //prints first contents page
             Console.ForegroundColor = Colors.ContentText;
             int x = MainVerticalBorderLocation + 3;
             int y = MainHorizontalBorderLocation + 5;
             int maxLineLength = XMax - x - 2;
+            bool addToCopyString = false;
 
             foreach (string s in Snippets[index].Contents[0].ContentBlock)
             {
                 if (s == ReadFile.BeginCodeSection)
                 {
                     Console.ForegroundColor = Colors.CopyText;
+                    addToCopyString = true;
                 }
                 else if (s == ReadFile.EndCodeSection)
                 {
                     Console.ForegroundColor = Colors.ContentText;
+                    addToCopyString = false;
                 }
                 else if (s.Length > maxLineLength) //if the Line will run off the screen. Not the best code - only handles one overrun
                 {
+                    if (addToCopyString)
+                    {
+                        ContentForClipboard += s + '\n';
+                    }
+
                     string substring1 = s.Substring(0, maxLineLength);
                     string substring2 = s.Substring(maxLineLength);
                     Console.SetCursorPosition(x, y);
@@ -279,6 +292,11 @@ namespace ConsoleCodeLibrary
                 } 
                 else
                 {
+                    if (addToCopyString)
+                    {
+                        ContentForClipboard += s + '\n';
+                    }
+
                     Console.SetCursorPosition(x, y);
                     Console.Write(s);
                     y++;

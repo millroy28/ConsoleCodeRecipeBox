@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AsyncWindowsClipboard;
+using System;
 using System.Collections.Generic;
 
 namespace ConsoleCodeLibrary
@@ -270,6 +271,8 @@ namespace ConsoleCodeLibrary
                         draws[category].PrintList();
                         break;
                     case ConsoleKey.F2:
+                        var clipboardService = new WindowsClipboardService(timeout: TimeSpan.FromMilliseconds(200));
+                        clipboardService.SetTextAsync(draws[category].ContentForClipboard);
                         break;
                     case ConsoleKey.F3:
                         break;

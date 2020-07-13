@@ -21,17 +21,7 @@ namespace ConsoleCodeLibrary
             
             int[] consoleSize = InitializeConsoleDisplay.SetDisplayAndFontSize();
             Controller.Run(consoleSize);
-            
-            
-            /*
-            Console.WriteLine("Hello World!");
-            string message = "Check your clipboard for this text!";
-            Console.WriteLine(message);
-
-            var clipboardService = new WindowsClipboardService(timeout:TimeSpan.FromMilliseconds(200));
-            clipboardService.SetTextAsync(message);
-            */
-            
+        
         }
     }
 }
