@@ -12,7 +12,7 @@ namespace ConsoleCodeLibrary
          * Tab to Switch context of Page Up/Down
          * Language Select
          * Keyword Select
-         * Copy to clipboard functionality
+         * 
          * "Menu Bar"
          * Exit prompt
          * 

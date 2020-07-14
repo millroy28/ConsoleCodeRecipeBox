@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 
 namespace ConsoleCodeLibrary
 {
@@ -24,7 +25,6 @@ namespace ConsoleCodeLibrary
         public List<KeyValuePair<string, string>> FilesAndTitles { get; set; }
         public int ListStatus { get; set; }
         public List<NoteObject> Snippets { get; set; }
-
         public string ContentForClipboard { get; set; }
 
 
@@ -259,7 +259,7 @@ namespace ConsoleCodeLibrary
             Console.ForegroundColor = Colors.ContentText;
             int x = MainVerticalBorderLocation + 3;
             int y = MainHorizontalBorderLocation + 5;
-            int maxLineLength = XMax - x - 2;
+            
             bool addToCopyString = false;
 
             foreach (string s in Snippets[index].Contents[0].ContentBlock)
@@ -273,36 +273,38 @@ namespace ConsoleCodeLibrary
                 {
                     Console.ForegroundColor = Colors.ContentText;
                     addToCopyString = false;
-                }
-                else if (s.Length > maxLineLength) //if the Line will run off the screen. Not the best code - only handles one overrun
-                {
-                    if (addToCopyString)
-                    {
-                        ContentForClipboard += s + '\n';
-                    }
-
-                    string substring1 = s.Substring(0, maxLineLength);
-                    string substring2 = s.Substring(maxLineLength);
-                    Console.SetCursorPosition(x, y);
-                    Console.Write(substring1);
-                    y++;
-                    Console.SetCursorPosition(x, y);
-                    Console.Write(substring2);
-                    y++;
                 } 
-                else
+                else 
                 {
                     if (addToCopyString)
                     {
                         ContentForClipboard += s + '\n';
                     }
-
-                    Console.SetCursorPosition(x, y);
-                    Console.Write(s);
-                    y++;
+                    y += PrintContentLine(s, x, y);
                 }
             }
             Console.ResetColor();
+        }
+
+        private int PrintContentLine(string line, int x, int y)
+        {   //If line is so long it can't be printed in one line, will cut printable portion, write it, and call itself again with remainder
+            int linesPrinted = 0;
+            int maxLineLength = XMax - x - 2;
+            Console.SetCursorPosition(x, y);
+
+            if (line.Length > maxLineLength)
+            {
+                string remainder = line.Substring(maxLineLength);
+                string truncated = line.Substring(0, maxLineLength);
+                Console.Write(truncated);
+                linesPrinted++;
+                linesPrinted += PrintContentLine(remainder, x, y + linesPrinted);
+            } else
+            {
+                Console.Write(line);
+                linesPrinted++;
+            }
+            return linesPrinted;
         }
         public void ClearContentWindow()
         {
