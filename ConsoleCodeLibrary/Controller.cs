@@ -7,14 +7,15 @@ namespace ConsoleCodeLibrary
     class Controller
     {
         /*TODO List:
-         * 
-         * Add Page Up/Down on files with BREAK tag
-         * Tab to Switch context of Page Up/Down
          * Language Select
          * Keyword Select
-         * 
-         * "Menu Bar"
          * Exit prompt
+         * Borders Cleanup
+         * Interface Cleanup
+         * "Menu Bar"
+         * Favorites Category
+         * 
+         * propmt function for messages
          * 
         */
         public static void Run(int[] consoleSize)
@@ -178,6 +179,17 @@ namespace ConsoleCodeLibrary
                         var clipboardService = new WindowsClipboardService(timeout: TimeSpan.FromMilliseconds(200));
                         clipboardService.SetTextAsync(draws[category].ContentForClipboard);
                         break;
+                    case ConsoleKey.F10:
+                        bool exit = draws[category].PromptYesOrNo("Exit Program?");
+                        if (exit)
+                        {
+                            EndProgram();
+                        } 
+                        else
+                        {
+                            draws[category].PrintContentsBody();
+                        }
+                        break;
                     //case ConsoleKey.Backspace:
                     //    break;
                     //case ConsoleKey.Clear:
@@ -332,9 +344,6 @@ namespace ConsoleCodeLibrary
                     //    break;
                     //case ConsoleKey.F9:
                     //    break;
-                    //case ConsoleKey.F10:
-                    //    EndProgram();
-                    //    break;
                     //case ConsoleKey.F11:
                     //    break;
                     //case ConsoleKey.F12:
@@ -457,7 +466,7 @@ namespace ConsoleCodeLibrary
 
         }
 
-        
+       
         public static void EndProgram()
         {
             Environment.Exit(0);

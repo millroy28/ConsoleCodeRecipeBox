@@ -23,15 +23,12 @@ namespace ConsoleCodeLibrary
         public int ContentPage { get; set; }
         public int Focus { get; set; }
         public List<KeyValuePair<string, string>> FilesAndTitles { get; set; }
-        //public int ListStatus { get; set; }
-
         public bool ListScrollUpAllow { get; set; }
         public bool ListScrollDownAllow { get; set; }
         public bool ListEndOfList { get; set; }
         public bool ContentScrollUpAllow { get; set; }
         public bool ContentScrollDownAllow { get; set; }
         public bool ContentEndOfContent { get; set; }
-
         public List<NoteObject> Snippets { get; set; }
         public string ContentForClipboard { get; set; }
 
@@ -59,11 +56,9 @@ namespace ConsoleCodeLibrary
             ContentPage = 0;
             Focus = 0;
             FilesAndTitles = _filesAndTitles;
-            //ListStatus = 0;
             Snippets = _snippets;
             ContentForClipboard = "";
         }
-
         public void MoveListSelection(bool up)
         {
 
@@ -92,7 +87,6 @@ namespace ConsoleCodeLibrary
             }
             Console.ResetColor();
         }
-
         public void PrintList () //+++++++++++++++++Move the menu printing into its own method below and make it print either based on 
         {
             //ListStatus = -1 when on the last page of the list. Will break on a -1 when PgDn is pressed here disallowing further scrolling.
@@ -236,7 +230,6 @@ namespace ConsoleCodeLibrary
                 Console.Write(character);
             }
         }
-
         public void PrintCategoryTitle(string category)
         {
             Console.SetCursorPosition(2, MainHorizontalBorderLocation);
@@ -248,7 +241,6 @@ namespace ConsoleCodeLibrary
             Console.Write('╞');
             Console.ResetColor();
         }
-
         public void PrintContentsHeader()
         {
             ClearHeaderArea();
@@ -304,7 +296,6 @@ namespace ConsoleCodeLibrary
 
             PrintContentsBody();
         }
-
         public void PrintContentsBody()
         {
             ClearContentArea();
@@ -350,7 +341,6 @@ namespace ConsoleCodeLibrary
             }
 
         }
-
         private int PrintContentLine(string line, int x, int y)
         {   //If line is so long it can't be printed in one line, will cut printable portion, write it, and call itself again with remainder
             int linesPrinted = 0;
@@ -401,6 +391,75 @@ namespace ConsoleCodeLibrary
                 }
             }
         }
+        public bool PromptYesOrNo(string prompt)
+        {
+            string promptInstructions = "Press ENTER for yes or ESC for no:";
+            int promptBoxWidth = (XMax - MainVerticalBorderLocation) / 2;
+            int promptBoxXStart = (promptBoxWidth / 2) + MainVerticalBorderLocation;
+            int promptBoxYStart = (YMax - MainHorizontalBorderLocation) / 2;
 
+            Console.ForegroundColor = ConsoleColor.Red;
+
+            //Top Border
+            Console.SetCursorPosition(promptBoxXStart, promptBoxYStart);
+            Console.Write("╔");
+            for(int x = promptBoxXStart + 1; x < promptBoxWidth + promptBoxXStart - 1; x++)
+            {
+                Console.SetCursorPosition(x, promptBoxYStart);
+                Console.Write("═");
+            }
+            Console.SetCursorPosition(promptBoxXStart + promptBoxWidth -1, promptBoxYStart);
+            Console.Write("╗");
+            
+            if (prompt.Length >= promptBoxWidth - 2) //trims string in case of message overrun - prompts will be hardcoded so overruns should only happen in odd screen size configs
+            {
+                prompt = prompt.Substring(0, promptBoxWidth - 2);
+            }
+
+            // Message
+            int promptXStart = promptBoxXStart + 1 + (((promptBoxWidth - 2) - prompt.Length) / 2); //centering message inside box
+            Console.SetCursorPosition(promptBoxXStart, promptBoxYStart + 1);
+            Console.Write("║");
+            Console.SetCursorPosition(promptXStart, promptBoxYStart + 1);
+            Console.Write(prompt);
+            Console.SetCursorPosition(promptBoxXStart + promptBoxWidth - 1, promptBoxYStart + 1);
+            Console.Write("║");
+            int promptInstructionsXStart = promptBoxXStart + 1 + (((promptBoxWidth - 2) - promptInstructions.Length) / 2); //centering message inside box
+            Console.SetCursorPosition(promptBoxXStart, promptBoxYStart + 2);
+            Console.Write("║");
+            Console.SetCursorPosition(promptInstructionsXStart, promptBoxYStart + 2);
+            Console.Write(promptInstructions);
+            Console.SetCursorPosition(promptBoxXStart + promptBoxWidth - 1, promptBoxYStart + 2);
+            Console.Write("║");
+            //Bottom Border
+            Console.SetCursorPosition(promptBoxXStart, promptBoxYStart + 3);
+            Console.Write("╚");
+            for (int x = promptBoxXStart + 1; x < promptBoxWidth + promptBoxXStart - 1; x++)
+            {
+                Console.SetCursorPosition(x, promptBoxYStart + 3);
+                Console.Write("═");
+            }
+            Console.SetCursorPosition(promptBoxXStart + promptBoxWidth - 1, promptBoxYStart + 3);
+            Console.Write("╝");
+
+            do
+            {
+
+                while (!Console.KeyAvailable)
+                {
+                    // Wait...
+                }
+                switch (Console.ReadKey(true).Key)
+                {
+                    case ConsoleKey.Enter:
+                        return true;
+                    case ConsoleKey.Escape:
+                        return false;
+                    default:
+                        break;
+                }
+            } while (true);
+        }
     }
+
 }
