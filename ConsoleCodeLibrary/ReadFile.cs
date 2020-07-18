@@ -18,6 +18,7 @@ namespace ConsoleCodeLibrary
         public const string BeginContentSection = ":CONTENT:";
         public const string BeginCodeSection = ":CODE:";
         public const string EndCodeSection = ":ENDCODE:";
+        public const string ContentPageBreak = ":BREAK:";
 
         
         public static List<string[]> ReadFileContents(string filePath)
@@ -36,25 +37,37 @@ namespace ConsoleCodeLibrary
             List<string[]> fileContent = ReadFileContents(filePath);
             string copyableCode = "";
             bool codeTag = false;
-            foreach (string s in fileContent[2])
+
+            List<ContentCopyPair> contents = new List<ContentCopyPair>();
+            List<string> pageOfContent = new List<string>();
+            foreach (string s in fileContent[3])
             {
                 if(s == BeginCodeSection)
                 {
                     codeTag = true;
-                    continue;
+                    //continue;
                 } 
                 else if (s == EndCodeSection)
                 {
                     codeTag = false;
-                    continue;
+                    //continue;
                 }
                 if (codeTag)
                 {
                     copyableCode += s + '\n';
                 }
+                if (s == ContentPageBreak)
+                {
+                    contents.Add(new ContentCopyPair(pageOfContent.ToArray(), copyableCode));
+                    pageOfContent.Clear();
+                    copyableCode = "";
+                }
+                else 
+                {
+                    pageOfContent.Add(s);
+                }
             }
-            List<ContentCopyPair> contents = new List<ContentCopyPair>();
-            contents.Add(new ContentCopyPair(fileContent[3], copyableCode));
+            contents.Add(new ContentCopyPair(pageOfContent.ToArray(), copyableCode));
             
             string title = "";          //converting title from string array (with one element, granted) to string
             foreach(string s in fileContent[0])

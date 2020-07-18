@@ -49,10 +49,10 @@ namespace ConsoleCodeLibrary
         {
             Console.CursorVisible = false;
             CONSOLE_FONT_INFO_EX ConsoleFontInfo = new CONSOLE_FONT_INFO_EX();
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
             ConsoleFontInfo.cbSize = (uint)Marshal.SizeOf(ConsoleFontInfo);
-
             ConsoleFontInfo.FaceName = "Source Code Pro";
-            ConsoleFontInfo.dwFontSize.X = 12;
+            ConsoleFontInfo.dwFontSize.X = 10;
             ConsoleFontInfo.dwFontSize.Y = 20;
 
             SetCurrentConsoleFontEx(GetStdHandle(StdHandle.OutputHandle), false, ref ConsoleFontInfo);

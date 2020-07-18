@@ -23,7 +23,15 @@ namespace ConsoleCodeLibrary
         public int ContentPage { get; set; }
         public int Focus { get; set; }
         public List<KeyValuePair<string, string>> FilesAndTitles { get; set; }
-        public int ListStatus { get; set; }
+        //public int ListStatus { get; set; }
+
+        public bool ListScrollUpAllow { get; set; }
+        public bool ListScrollDownAllow { get; set; }
+        public bool ListEndOfList { get; set; }
+        public bool ContentScrollUpAllow { get; set; }
+        public bool ContentScrollDownAllow { get; set; }
+        public bool ContentEndOfContent { get; set; }
+
         public List<NoteObject> Snippets { get; set; }
         public string ContentForClipboard { get; set; }
 
@@ -41,8 +49,8 @@ namespace ConsoleCodeLibrary
             YListStart = 2;
             MainHorizontalBorderLocation = 1;
             MainVerticalBorderLocation = 31;
-            MainHorizontalBorderCharacter = '=';
-            MainVerticalBorderCharacter = '|';
+            MainHorizontalBorderCharacter = '═';
+            MainVerticalBorderCharacter = '│'; 
             MaxListLength = 0;
             Colors = _colors;
             CategoryName = _categoryName;
@@ -51,7 +59,7 @@ namespace ConsoleCodeLibrary
             ContentPage = 0;
             Focus = 0;
             FilesAndTitles = _filesAndTitles;
-            ListStatus = 0;
+            //ListStatus = 0;
             Snippets = _snippets;
             ContentForClipboard = "";
         }
@@ -87,8 +95,8 @@ namespace ConsoleCodeLibrary
 
         public void PrintList () //+++++++++++++++++Move the menu printing into its own method below and make it print either based on 
         {
-            //ListStatus = -1 when on the last page of the list. Controller will break on a -1 when PgDn is pressed here disallowing further scrolling.
-            //ListStatus = 1 when on the first page of the list. Controller will break on a 1 when PgUp is pressed here disallowing further scrolling.
+            //ListStatus = -1 when on the last page of the list. Will break on a -1 when PgDn is pressed here disallowing further scrolling.
+            //ListStatus = 1 when on the first page of the list. Will break on a 1 when PgUp is pressed here disallowing further scrolling.
             //ListStatus = 0 otherwise, allowing scrolling either way.
             //ListStatus = 2 if the list is too small for scrolling
 
@@ -104,68 +112,110 @@ namespace ConsoleCodeLibrary
             for (int i = YListStart, j = listStartIndex; i < YMax; i++, j++)
             {
                 Console.SetCursorPosition(XListStart, i);
-                if (j == FilesAndTitles.Count)  //If end of index is reached
+                if (j == FilesAndTitles.Count)  //If end of list is reached
                 {
-                    Console.SetCursorPosition(XListStart, YMax - 1);
-                    if(ListPage == 0) 
-                    {
-                        Console.BackgroundColor = Colors.MenuTextBackground;
-                        Console.ForegroundColor = Colors.MenuText;
-                        Console.Write($"PAGE {ListPage + 1}                        ");
-                        Console.ResetColor();
-                        ListStatus = 2;
-                        return;
-                    }
-                    else
-                    {
-                        Console.BackgroundColor = Colors.MenuTextBackground;
-                        Console.ForegroundColor = Colors.MenuText;
-                        Console.Write($"PAGE {ListPage + 1} PgUp: Prev             ");
-                        Console.ResetColor();
-                        ListStatus = -1;
-                        return;
-                    }
-
+                    ListEndOfList = true;
+                    DrawNavText();
+                    return;
                 }
-                
                 if(j == listStartIndex + MaxListLength) //If end of display length is reached
                 {
-                    if (ListPage == 0)
-                    {
-                        Console.BackgroundColor = Colors.MenuTextBackground;
-                        Console.ForegroundColor = Colors.MenuText;
-                        Console.Write($"PAGE {ListPage + 1}              PgDn: Next");
-                        Console.ResetColor();
-                        ListStatus = 1;
-                        return;
-                    }
-                    else
-                    {
-                        Console.BackgroundColor = Colors.MenuTextBackground;
-                        Console.ForegroundColor = Colors.MenuText;
-                        Console.Write($"PAGE {ListPage + 1} PgUp: Prev / PgDn: Next");
-                        Console.ResetColor();
-                        ListStatus = 0;
-                        return;
-                    }
+                    ListEndOfList = false;
+                    DrawNavText();
+                    return;
                 }
                 Console.ForegroundColor = Colors.ListText;
                 Console.Write(FilesAndTitles[j].Value);
             }
-            ListStatus = 0;
+            //ListStatus = 0;
             return;
         }
-        public void DrawNavBar()
-        {
+        public void DrawNavText()
+            {
+            DrawNavTextBackground();
+            Console.ForegroundColor = Colors.NavText;
+            //Console.BackgroundColor = Colors.NavTextBackground; Taken care of by DrawNavTextBackground()
+            int page = 0;
+            bool upAllow;
+            bool downAllow;
+            bool end = false;
 
+            if (Focus == 0)
+            {
+                page = ListPage;
+                end = ListEndOfList;
+                Console.SetCursorPosition(XListStart, YMax - 1);
+            }   
+            else if (Focus == 1)
+            {
+                page = ContentPage;
+                end = ContentEndOfContent;
+                Console.SetCursorPosition(MainVerticalBorderLocation + 2, YMax - 1);
+            }
+
+            if (end)
+            {
+                if (page == 0)
+                {
+                    Console.Write($"PAGE {page + 1}");
+                    upAllow = false;
+                    downAllow = false;
+                } 
+                else
+                {
+                    Console.Write($"PAGE {page + 1} PgUp: ▲");
+                    upAllow = true;
+                    downAllow = false;
+                }
+            } 
+            else
+            {
+                if (page == 0)
+                {
+                    Console.Write($"PAGE {page + 1}           PgDn: ▼");
+                    upAllow = false;
+                    downAllow = true;
+                } 
+                else
+                {
+                    Console.Write($"PAGE {page + 1} PgUp: ▲ / PgDn: ▼");
+                    upAllow = true;
+                    downAllow = true;
+                }
+            }
+
+            if (Focus == 0)
+            {
+                ListScrollUpAllow = upAllow;
+                ListScrollDownAllow = downAllow;
+            }
+            else if (Focus == 1)
+            {
+                ContentScrollUpAllow = upAllow;
+                ContentScrollDownAllow = downAllow;
+            }
+
+            Console.ResetColor();
+        }
+        private void DrawNavTextBackground()
+        {
+            Console.BackgroundColor = Colors.NavTextBackground;
+            for (int x = 0; x < XMax; x++)
+            {
+                if(x != MainVerticalBorderLocation)
+                {
+                    Console.SetCursorPosition(x, YMax - 1);
+                    Console.Write(" ");
+                }
+            }
         }
         public void DrawBorders ()
         {
-            ClearContentWindow();
+            ClearHeaderAndContentWindow();
             Console.ForegroundColor = Colors.Border;
             VerticleBorder(YMax, MainVerticalBorderLocation, MainHorizontalBorderLocation, MainVerticalBorderCharacter);
             HorizontalBorder(XMax, MainHorizontalBorderLocation, MainHorizontalBorderCharacter);
-            PrintCategoryTitle(Colors.TitleText, CategoryName);
+            PrintCategoryTitle(CategoryName);
             Console.ResetColor();
 
             MaxListLength = YMax - 1 - 1 - MainHorizontalBorderLocation;
@@ -187,17 +237,21 @@ namespace ConsoleCodeLibrary
             }
         }
 
-        public static void PrintCategoryTitle(ConsoleColor color, string category)
+        public void PrintCategoryTitle(string category)
         {
-            Console.ForegroundColor = color;
             Console.SetCursorPosition(2, MainHorizontalBorderLocation);
+            Console.ForegroundColor = Colors.Border;
+            Console.Write('╡');
+            Console.ForegroundColor = Colors.TitleText;
             Console.Write(category.ToUpper());
+            Console.ForegroundColor = Colors.Border;
+            Console.Write('╞');
             Console.ResetColor();
         }
 
         public void PrintContentsHeader()
         {
-            ClearContentWindow();
+            ClearHeaderArea();
             int index = Selection + (MaxListLength * ListPage);
             
             //Print Title
@@ -245,24 +299,25 @@ namespace ConsoleCodeLibrary
             for (int i = secondaryBorderStartX; i < XMax; i++)
             {
                 Console.SetCursorPosition(i, secondaryBorderStartY);
-                Console.Write("-");
+                Console.Write("─");
             }
 
-            PrintContentsBody(index);
+            PrintContentsBody();
         }
 
-        public void PrintContentsBody(int index)
+        public void PrintContentsBody()
         {
+            ClearContentArea();
             //clears content for clipboard
             ContentForClipboard = "";
             //prints first contents page
+            int index = Selection + (MaxListLength * ListPage);
             Console.ForegroundColor = Colors.ContentText;
             int x = MainVerticalBorderLocation + 3;
             int y = MainHorizontalBorderLocation + 5;
-            
             bool addToCopyString = false;
 
-            foreach (string s in Snippets[index].Contents[0].ContentBlock)
+            foreach (string s in Snippets[index].Contents[ContentPage].ContentBlock)
             {
                 if (s == ReadFile.BeginCodeSection)
                 {
@@ -284,6 +339,16 @@ namespace ConsoleCodeLibrary
                 }
             }
             Console.ResetColor();
+
+            if (Snippets[index].Contents.Count - 1 == ContentPage)
+            {
+                ContentEndOfContent = true;
+            } 
+            else
+            {
+                ContentEndOfContent = false;
+            }
+
         }
 
         private int PrintContentLine(string line, int x, int y)
@@ -306,11 +371,30 @@ namespace ConsoleCodeLibrary
             }
             return linesPrinted;
         }
-        public void ClearContentWindow()
+        public void ClearHeaderAndContentWindow()
         {
-            for(int y = MainHorizontalBorderLocation + 1; y < YMax; y++)
+            ClearHeaderArea();
+            ClearContentArea();
+        }
+        public void ClearHeaderArea()
+        {
+            int headerAreaStartY = MainHorizontalBorderLocation + 1;
+            int secondaryBorderStartY = MainHorizontalBorderLocation + 4;
+            for (int y = headerAreaStartY; y < secondaryBorderStartY; y++)
             {
-                for(int x = MainVerticalBorderLocation + 1; x < XMax; x++)
+                for (int x = MainVerticalBorderLocation + 1; x < XMax; x++)
+                {
+                    Console.SetCursorPosition(x, y);
+                    Console.Write(" ");
+                }
+            }
+        }
+        public void ClearContentArea()
+        {
+            int secondaryBorderStartY = MainHorizontalBorderLocation + 3;
+            for (int y = secondaryBorderStartY + 1; y < YMax - 1; y++)
+            {
+                for (int x = MainVerticalBorderLocation + 1; x < XMax; x++)
                 {
                     Console.SetCursorPosition(x, y);
                     Console.Write(" ");
