@@ -9,13 +9,13 @@ namespace ConsoleCodeLibrary
         /*TODO List:
          * Language Select
          * Keyword Select
-         * Exit prompt
+         * 
          * Borders Cleanup
          * Interface Cleanup
          * "Menu Bar"
          * Favorites Category
          * 
-         * propmt function for messages
+         * 
          * 
         */
         public static void Run(int[] consoleSize)

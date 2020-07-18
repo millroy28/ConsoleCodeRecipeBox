@@ -415,22 +415,33 @@ namespace ConsoleCodeLibrary
             {
                 prompt = prompt.Substring(0, promptBoxWidth - 2);
             }
-
-            // Message
-            int promptXStart = promptBoxXStart + 1 + (((promptBoxWidth - 2) - prompt.Length) / 2); //centering message inside box
+            // Inside Box Row 1
             Console.SetCursorPosition(promptBoxXStart, promptBoxYStart + 1);
             Console.Write("║");
-            Console.SetCursorPosition(promptXStart, promptBoxYStart + 1);
-            Console.Write(prompt);
+            for (int x = promptBoxXStart + 1; x < promptBoxWidth + promptBoxXStart - 1; x++)
+            {
+                Console.SetCursorPosition(x, promptBoxYStart + 1);
+                Console.Write(" ");
+            }
             Console.SetCursorPosition(promptBoxXStart + promptBoxWidth - 1, promptBoxYStart + 1);
             Console.Write("║");
-            int promptInstructionsXStart = promptBoxXStart + 1 + (((promptBoxWidth - 2) - promptInstructions.Length) / 2); //centering message inside box
+            // Inside Box Row 2
             Console.SetCursorPosition(promptBoxXStart, promptBoxYStart + 2);
             Console.Write("║");
-            Console.SetCursorPosition(promptInstructionsXStart, promptBoxYStart + 2);
-            Console.Write(promptInstructions);
+            for (int x = promptBoxXStart + 1; x < promptBoxWidth + promptBoxXStart - 1; x++)
+            {
+                Console.SetCursorPosition(x, promptBoxYStart + 2);
+                Console.Write(" ");
+            }
             Console.SetCursorPosition(promptBoxXStart + promptBoxWidth - 1, promptBoxYStart + 2);
             Console.Write("║");
+            // Message
+            int promptXStart = promptBoxXStart + 1 + (((promptBoxWidth - 2) - prompt.Length) / 2); //centering message inside box
+            Console.SetCursorPosition(promptXStart, promptBoxYStart + 1);
+            Console.Write(prompt);
+            int promptInstructionsXStart = promptBoxXStart + 1 + (((promptBoxWidth - 2) - promptInstructions.Length) / 2); //centering message inside box
+            Console.SetCursorPosition(promptInstructionsXStart, promptBoxYStart + 2);
+            Console.Write(promptInstructions);
             //Bottom Border
             Console.SetCursorPosition(promptBoxXStart, promptBoxYStart + 3);
             Console.Write("╚");
