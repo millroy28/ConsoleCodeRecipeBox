@@ -1,21 +1,18 @@
 ﻿using AsyncWindowsClipboard;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ConsoleCodeLibrary
 {
     class Controller
     {
         /*TODO List:
-         * Language Select
-         * Keyword Select
-         * 
-         * Borders Cleanup
-         * Interface Cleanup
+         * Language filter
+         * Keyword Filter
+         * Interface Cleanup & Debug
          * "Menu Bar"
          * Favorites Category
-         * 
-         * 
          * 
         */
         public static void Run(int[] consoleSize)
@@ -42,9 +39,8 @@ namespace ConsoleCodeLibrary
             int maxCategory = categories.Length -1;
             draws[category].DrawBorders();
             draws[category].PrintList();
-
-
-
+            draws[category].PrintContentsHeader();
+            draws[category].HighlightCurrentListSelectionAfterTransition();
             do
             {
 
@@ -58,16 +54,15 @@ namespace ConsoleCodeLibrary
                         if(category < maxCategory)
                         {
                             category++;
-                            draws[category].DrawBorders();
-                            draws[category].PrintList();
                         }   
                         else
                         {
                             category = 1; // index 0 is reserved for "help" articles
-                            draws[category].DrawBorders();
-                            draws[category].PrintList();
                         }
-                      
+                        draws[category].DrawBorders();
+                        draws[category].PrintList();
+                        draws[category].HighlightCurrentListSelectionAfterTransition();
+                        draws[category].PrintContentsHeader();
                         break;
                     case ConsoleKey.Enter:
                         draws[category].PrintContentsHeader();
@@ -155,6 +150,7 @@ namespace ConsoleCodeLibrary
                         {
                             draws[category].Selection--;
                             draws[category].MoveListSelection(true);
+                            draws[category].PrintContentsHeader();
                             break;
                         }
 
@@ -167,6 +163,7 @@ namespace ConsoleCodeLibrary
                         {
                             draws[category].Selection++;
                             draws[category].MoveListSelection(false);
+                            draws[category].PrintContentsHeader();
                             break;
                         }
                     case ConsoleKey.F1:
@@ -190,6 +187,8 @@ namespace ConsoleCodeLibrary
                             draws[category].PrintContentsBody();
                         }
                         break;
+                    //case ConsoleKey.F3:
+                    //    break;
                     //case ConsoleKey.Backspace:
                     //    break;
                     //case ConsoleKey.Clear:
@@ -329,8 +328,6 @@ namespace ConsoleCodeLibrary
                     //case ConsoleKey.Decimal:
                     //    break;
                     //case ConsoleKey.Divide:
-                    //    break;
-                    //case ConsoleKey.F3:
                     //    break;
                     //case ConsoleKey.F4:
                     //    break;

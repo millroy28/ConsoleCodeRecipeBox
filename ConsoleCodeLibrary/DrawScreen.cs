@@ -15,6 +15,9 @@ namespace ConsoleCodeLibrary
         public static int MainVerticalBorderLocation { get; set; }
         public static char MainHorizontalBorderCharacter { get; set; }
         public static char MainVerticalBorderCharacter { get; set; }
+        public static char MainVerticalHorizontalIntersectionCharacter { get; set; }
+        public static char SecondaryHorizontalBorderCharacter { get; set; }
+        public static char SecondaryVerticalHorizontalIntersectionCharacter { get; set; }
         public static int MaxListLength { get; set; }
         public ColorProfile Colors { get; set; }
         public string CategoryName { get; set; }
@@ -47,7 +50,10 @@ namespace ConsoleCodeLibrary
             MainHorizontalBorderLocation = 1;
             MainVerticalBorderLocation = 31;
             MainHorizontalBorderCharacter = '═';
-            MainVerticalBorderCharacter = '│'; 
+            MainVerticalBorderCharacter = '│';
+            MainVerticalHorizontalIntersectionCharacter = '╤';
+            SecondaryHorizontalBorderCharacter = '─';
+            SecondaryVerticalHorizontalIntersectionCharacter = '├';
             MaxListLength = 0;
             Colors = _colors;
             CategoryName = _categoryName;
@@ -85,6 +91,16 @@ namespace ConsoleCodeLibrary
                 Console.SetCursorPosition(XListStart, YListStart + Selection - 1);
                 Console.Write(FilesAndTitles[Selection + (MaxListLength * ListPage) - 1].Value);
             }
+            Console.ResetColor();
+        }
+        public void HighlightCurrentListSelectionAfterTransition()
+        {
+            Console.SetCursorPosition(XListStart, YListStart + Selection);
+            Console.Write("                              ");
+            Console.SetCursorPosition(XListStart, YListStart + Selection);
+            Console.ForegroundColor = Colors.ListTextHighlight;
+            Console.BackgroundColor = Colors.ListTextHighlightBackground;
+            Console.Write(FilesAndTitles[Selection + (MaxListLength * ListPage)].Value);
             Console.ResetColor();
         }
         public void PrintList () //+++++++++++++++++Move the menu printing into its own method below and make it print either based on 
@@ -207,28 +223,30 @@ namespace ConsoleCodeLibrary
         {
             ClearHeaderAndContentWindow();
             Console.ForegroundColor = Colors.Border;
-            VerticleBorder(YMax, MainVerticalBorderLocation, MainHorizontalBorderLocation, MainVerticalBorderCharacter);
-            HorizontalBorder(XMax, MainHorizontalBorderLocation, MainHorizontalBorderCharacter);
+            VerticleBorder();
+            HorizontalBorder();
             PrintCategoryTitle(CategoryName);
             Console.ResetColor();
 
             MaxListLength = YMax - 1 - 1 - MainHorizontalBorderLocation;
         }
-        public static void VerticleBorder(int height, int vertLocation, int horizLocation, char character)
+        public static void VerticleBorder()
         {
-            for (int i = horizLocation; i < height; i++)
+            for (int i = MainHorizontalBorderLocation; i < YMax; i++)
             {
-                Console.SetCursorPosition(vertLocation, i);
-                Console.Write(character);
+                Console.SetCursorPosition(MainVerticalBorderLocation, i);
+                Console.Write(MainVerticalBorderCharacter);
             }
         }
-        public static void HorizontalBorder(int width, int location, char character)
+        public static void HorizontalBorder()
         {
-            for(int i = 0; i < width; i++)
+            for(int i = 0; i < XMax; i++)
             {
-                Console.SetCursorPosition(i, location);
-                Console.Write(character);
+                Console.SetCursorPosition(i, MainHorizontalBorderLocation);
+                Console.Write(MainHorizontalBorderCharacter);
             }
+            Console.SetCursorPosition(MainVerticalBorderLocation, MainHorizontalBorderLocation);
+            Console.Write(MainVerticalHorizontalIntersectionCharacter);
         }
         public void PrintCategoryTitle(string category)
         {
@@ -291,8 +309,10 @@ namespace ConsoleCodeLibrary
             for (int i = secondaryBorderStartX; i < XMax; i++)
             {
                 Console.SetCursorPosition(i, secondaryBorderStartY);
-                Console.Write("─");
+                Console.Write(SecondaryHorizontalBorderCharacter);
             }
+            Console.SetCursorPosition(MainVerticalBorderLocation, secondaryBorderStartY);
+            Console.Write(SecondaryVerticalHorizontalIntersectionCharacter);
 
             PrintContentsBody();
         }
@@ -471,6 +491,71 @@ namespace ConsoleCodeLibrary
                 }
             } while (true);
         }
+        public string PromptForInput(string prompt)
+        {
+            int promptBoxWidth = (XMax - MainVerticalBorderLocation) / 2;
+            int promptBoxXStart = (promptBoxWidth / 2) + MainVerticalBorderLocation;
+            int promptBoxYStart = (YMax - MainHorizontalBorderLocation) / 2;
+
+            Console.ForegroundColor = Colors.MenuText;
+
+            //Top Border
+            Console.SetCursorPosition(promptBoxXStart, promptBoxYStart);
+            Console.Write("╔");
+            for(int x = promptBoxXStart + 1; x < promptBoxWidth + promptBoxXStart - 1; x++)
+            {
+                Console.SetCursorPosition(x, promptBoxYStart);
+                Console.Write("═");
+            }
+            Console.SetCursorPosition(promptBoxXStart + promptBoxWidth -1, promptBoxYStart);
+            Console.Write("╗");
+            
+            if (prompt.Length >= promptBoxWidth - 2) //trims string in case of message overrun - prompts will be hardcoded so overruns should only happen in odd screen size configs
+            {
+                prompt = prompt.Substring(0, promptBoxWidth - 2);
+            }
+            // Inside Box Row 1
+            Console.SetCursorPosition(promptBoxXStart, promptBoxYStart + 1);
+            Console.Write("║");
+            for (int x = promptBoxXStart + 1; x < promptBoxWidth + promptBoxXStart - 1; x++)
+            {
+                Console.SetCursorPosition(x, promptBoxYStart + 1);
+                Console.Write(" ");
+            }
+            Console.SetCursorPosition(promptBoxXStart + promptBoxWidth - 1, promptBoxYStart + 1);
+            Console.Write("║");
+            // Inside Box Row 2
+            Console.SetCursorPosition(promptBoxXStart, promptBoxYStart + 2);
+            Console.Write("║");
+            for (int x = promptBoxXStart + 1; x < promptBoxWidth + promptBoxXStart - 1; x++)
+            {
+                Console.SetCursorPosition(x, promptBoxYStart + 2);
+                Console.Write(" ");
+            }
+            Console.SetCursorPosition(promptBoxXStart + promptBoxWidth - 1, promptBoxYStart + 2);
+            Console.Write("║");
+            // Message
+            int promptXStart = promptBoxXStart + 1 + (((promptBoxWidth - 2) - prompt.Length) / 2); //centering message inside box
+            Console.SetCursorPosition(promptXStart, promptBoxYStart + 1);
+            Console.Write(prompt);
+                     
+            //Bottom Border
+            Console.SetCursorPosition(promptBoxXStart, promptBoxYStart + 3);
+            Console.Write("╚");
+            for (int x = promptBoxXStart + 1; x < promptBoxWidth + promptBoxXStart - 1; x++)
+            {
+                Console.SetCursorPosition(x, promptBoxYStart + 3);
+                Console.Write("═");
+            }
+            Console.SetCursorPosition(promptBoxXStart + promptBoxWidth - 1, promptBoxYStart + 3);
+            Console.Write("╝");
+
+            //Get Input:
+            Console.SetCursorPosition(promptBoxXStart + 3, promptBoxYStart + 2);
+            Console.Write(">");
+            return Console.ReadLine();
+        }
+
     }
 
 }
