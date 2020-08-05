@@ -69,6 +69,7 @@ namespace ConsoleCodeLibrary
                         draws[category].PrintList();
                         draws[category].HighlightCurrentListSelectionAfterTransition();
                         draws[category].PrintContentsHeader();
+                        draws[category].DrawMenuBar();
                         break;
                     case ConsoleKey.Enter:
                         draws[category].PrintContentsHeader();
@@ -144,9 +145,12 @@ namespace ConsoleCodeLibrary
                     case ConsoleKey.RightArrow:
                         if(draws[category].Focus == 0)
                         {
-                            draws[category].Focus = 1;
-                            draws[category].DrawNavText();
-                            draws[category].RemoveHighlightCurrentListSelectionAfterTransition();
+                            if (!draws[category].ContentEndOfContent)
+                            {
+                                draws[category].Focus = 1;
+                                draws[category].DrawNavText();
+                                draws[category].RemoveHighlightCurrentListSelectionAfterTransition();
+                            }
                         }
                         break;
                     case ConsoleKey.UpArrow:
@@ -486,6 +490,7 @@ namespace ConsoleCodeLibrary
             screen.PrintList();
             screen.PrintContentsHeader();
             screen.HighlightCurrentListSelectionAfterTransition();
+            screen.DrawMenuBar();
             return;
         }
         public static void EndProgram()

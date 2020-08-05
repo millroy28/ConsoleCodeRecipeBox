@@ -1,1 +1,29 @@
 'Welcome!'
+:CONTENT:
+
+Welcome to the Console Code Library or someother whatever I've named it now.
+
+This is the basic framework of a project.
+
+I will build out from here to customize this as an assistant for my job.
+
+Controls are:
+Tab					-	Switches between categories	
+Right/Left Arrow	-	Switches focus from the content
+						pane to the content pane			
+						(if there is more content to view,
+						 as indicated by a "...More"
+ 						 in the bottom right corner)
+Up/Down Arrow		-	Scrolls through individual snippets
+Page Up/Down		-	When focus is on list, and list is longer
+						than the screen allows it will scroll
+						through pages in the list. When focus
+						is on content with multiple pages,
+						will scroll through the pages.
+:BREAK:
+F1					-	Halp
+F2					-	Adds copyable text to clipboard
+F10					-	Exit
+F12					-	Redraw the window. (If you resize the console
+						window, the display will be scrambled. F12
+						will redraw at current console size)

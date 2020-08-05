@@ -571,6 +571,27 @@ namespace ConsoleCodeLibrary
             return Console.ReadLine();
         }
 
+        public void DrawMenuBar()
+        {
+            Console.ForegroundColor = Colors.MenuText;
+            Console.BackgroundColor = Colors.MenuTextBackground;
+            for(int i = 0; i < XMax; i++)
+            {
+                Console.SetCursorPosition(i, 0);
+                Console.Write(" ");
+            }
+
+            Console.SetCursorPosition(0, 0);
+            Console.Write("  CODE LIBRARY:    ");
+            Console.Write("<F1 Help>  ");
+            Console.Write("<F2 Copy>  ");
+            Console.Write("<TAB Change Topics>  ");
+            Console.Write("               ");
+            Console.Write("<F10 Exit>  ");
+            Console.Write("<F12 Redraw Window>  ");
+            Console.ResetColor();
+        }
+
     }
 
 }
