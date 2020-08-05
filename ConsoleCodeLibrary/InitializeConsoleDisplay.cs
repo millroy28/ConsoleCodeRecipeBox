@@ -10,25 +10,6 @@ namespace ConsoleCodeLibrary
 {
     class InitializeConsoleDisplay
     {
-        public static int[] SetDisplayAndFontSize()
-        {
-            SetFontAndSize();
-            int [] consoleSize = Maximize();
-            return consoleSize;
-        }
-
-
-        private static int[] Maximize()
-        {
-            int[] consoleSize = new int[2];
-            consoleSize[0] = Console.LargestWindowWidth;
-            consoleSize[1] = Console.LargestWindowHeight;
-            Console.SetWindowSize(consoleSize[0], consoleSize[1]);
-            Console.SetBufferSize(consoleSize[0], consoleSize[1]);
-            return consoleSize;
-        }
-
-
         [DllImport("kernel32.dll", SetLastError = true)]
         static extern Int32 SetCurrentConsoleFontEx(
             IntPtr ConsoleOutput,
@@ -45,8 +26,9 @@ namespace ConsoleCodeLibrary
 
         private static readonly IntPtr INVALID_HANDLE_VALUE = new IntPtr(-1);
 
-        private static void SetFontAndSize()
+        public static void SetConsoleParameters()
         {
+            Console.Title = "Job Assistant";
             Console.CursorVisible = false;
             CONSOLE_FONT_INFO_EX ConsoleFontInfo = new CONSOLE_FONT_INFO_EX();
             Console.OutputEncoding = System.Text.Encoding.UTF8;

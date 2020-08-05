@@ -7,8 +7,8 @@ namespace ConsoleCodeLibrary
 {
     class DrawScreen
     {
-        public static int XMax { get; set; }
-        public static int YMax { get; set; }
+        public int XMax { get; set; }
+        public int YMax { get; set; }
         public static int XListStart { get; set; }
         public static int YListStart { get; set; }
         public static int MainHorizontalBorderLocation { get; set; }
@@ -64,6 +64,7 @@ namespace ConsoleCodeLibrary
             FilesAndTitles = _filesAndTitles;
             Snippets = _snippets;
             ContentForClipboard = "";
+            ContentEndOfContent = true;
         }
         public void MoveListSelection(bool up)
         {
@@ -103,13 +104,18 @@ namespace ConsoleCodeLibrary
             Console.Write(FilesAndTitles[Selection + (MaxListLength * ListPage)].Value);
             Console.ResetColor();
         }
-        public void PrintList () //+++++++++++++++++Move the menu printing into its own method below and make it print either based on 
+        public void RemoveHighlightCurrentListSelectionAfterTransition()
         {
-            //ListStatus = -1 when on the last page of the list. Will break on a -1 when PgDn is pressed here disallowing further scrolling.
-            //ListStatus = 1 when on the first page of the list. Will break on a 1 when PgUp is pressed here disallowing further scrolling.
-            //ListStatus = 0 otherwise, allowing scrolling either way.
-            //ListStatus = 2 if the list is too small for scrolling
+            Console.SetCursorPosition(XListStart, YListStart + Selection);
+            Console.Write("                              ");
+            Console.SetCursorPosition(XListStart, YListStart + Selection);
+            Console.ForegroundColor = Colors.ListText;
+            Console.Write(FilesAndTitles[Selection + (MaxListLength * ListPage)].Value);
+            Console.ResetColor();
+        }
 
+        public void PrintList () 
+        {
             int listStartIndex = MaxListLength * ListPage;
 
             //clear list on display
@@ -204,7 +210,7 @@ namespace ConsoleCodeLibrary
                 ContentScrollUpAllow = upAllow;
                 ContentScrollDownAllow = downAllow;
             }
-
+            
             Console.ResetColor();
         }
         private void DrawNavTextBackground()
@@ -230,7 +236,7 @@ namespace ConsoleCodeLibrary
 
             MaxListLength = YMax - 1 - 1 - MainHorizontalBorderLocation;
         }
-        public static void VerticleBorder()
+        public void VerticleBorder()
         {
             for (int i = MainHorizontalBorderLocation; i < YMax; i++)
             {
@@ -238,7 +244,7 @@ namespace ConsoleCodeLibrary
                 Console.Write(MainVerticalBorderCharacter);
             }
         }
-        public static void HorizontalBorder()
+        public void HorizontalBorder()
         {
             for(int i = 0; i < XMax; i++)
             {
@@ -358,6 +364,15 @@ namespace ConsoleCodeLibrary
             else
             {
                 ContentEndOfContent = false;
+            }
+
+            if (!ContentEndOfContent)
+            {
+                Console.ForegroundColor = Colors.NavText;
+                Console.BackgroundColor = Colors.NavTextBackground;
+                Console.SetCursorPosition(XMax - 9, YMax - 1);
+                Console.Write("More...");
+                Console.ResetColor();
             }
 
         }

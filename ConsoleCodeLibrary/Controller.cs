@@ -1,7 +1,7 @@
 ﻿using AsyncWindowsClipboard;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+
 
 namespace ConsoleCodeLibrary
 {
@@ -13,16 +13,21 @@ namespace ConsoleCodeLibrary
          * Interface Cleanup & Debug
          * "Menu Bar"
          * Favorites Category
-         * 
+         * Refresh file list
+         * Create New Entry     
         */
-        public static void Run(int[] consoleSize)
+        public static void Run()
         {
+            //Create and Populate Categories, Color Profile, DrawScreens, NoteDatat
             string[] categories = ReadFile.ReadCategories();
             List<ColorProfile> colors = new List<ColorProfile>();
             List<DrawScreen> draws = new List<DrawScreen>();
             List<List<KeyValuePair<string, string>>> fileNamesAndTitles = new List<List<KeyValuePair<string, string>>>();
             List<List<NoteObject>> allSnippets = new List<List<NoteObject>>();
-         
+            int[] consoleSize = {Console.WindowWidth, Console.WindowHeight};
+            InitializeConsoleDisplay.SetConsoleParameters();
+
+            //Add Colors, data, into DrawScreen objects
             for (int i = 0; i<categories.Length; i++)
             {
                 fileNamesAndTitles.Add(ReadFile.ReadFileTitles(categories[i]));
@@ -35,12 +40,13 @@ namespace ConsoleCodeLibrary
                 }
                 draws.Add(new DrawScreen(consoleSize, colors[i], categories[i], fileNamesAndTitles[i], allSnippets[i]));
             }
+            
             int category = 0;
             int maxCategory = categories.Length -1;
-            draws[category].DrawBorders();
-            draws[category].PrintList();
-            draws[category].PrintContentsHeader();
-            draws[category].HighlightCurrentListSelectionAfterTransition();
+
+            //Display
+            DisplayScreen(draws[category]);
+
             do
             {
 
@@ -132,6 +138,7 @@ namespace ConsoleCodeLibrary
                         {
                             draws[category].Focus = 0;
                             draws[category].DrawNavText();
+                            draws[category].HighlightCurrentListSelectionAfterTransition();
                         }
                         break;
                     case ConsoleKey.RightArrow:
@@ -139,6 +146,7 @@ namespace ConsoleCodeLibrary
                         {
                             draws[category].Focus = 1;
                             draws[category].DrawNavText();
+                            draws[category].RemoveHighlightCurrentListSelectionAfterTransition();
                         }
                         break;
                     case ConsoleKey.UpArrow:
@@ -186,6 +194,16 @@ namespace ConsoleCodeLibrary
                         {
                             draws[category].PrintContentsBody();
                         }
+                        break;
+                    case ConsoleKey.F12:
+                        consoleSize[0] = Console.WindowWidth;
+                        consoleSize[1] = Console.WindowHeight;
+                        foreach (DrawScreen d in draws)
+                        {
+                            d.XMax = consoleSize[0];
+                            d.YMax = consoleSize[1];
+                        }
+                        DisplayScreen(draws[category]);
                         break;
                     //case ConsoleKey.F3:
                     //    break;
@@ -343,8 +361,6 @@ namespace ConsoleCodeLibrary
                     //    break;
                     //case ConsoleKey.F11:
                     //    break;
-                    //case ConsoleKey.F12:
-                    //    break;
                     //case ConsoleKey.F13:
                     //    break;
                     //case ConsoleKey.F14:
@@ -463,7 +479,15 @@ namespace ConsoleCodeLibrary
 
         }
 
-       
+        public static void DisplayScreen(DrawScreen screen)
+        {
+            Console.Clear();
+            screen.DrawBorders();
+            screen.PrintList();
+            screen.PrintContentsHeader();
+            screen.HighlightCurrentListSelectionAfterTransition();
+            return;
+        }
         public static void EndProgram()
         {
             Environment.Exit(0);

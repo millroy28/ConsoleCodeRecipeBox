@@ -19,8 +19,8 @@ namespace ConsoleCodeLibrary
             //Controller -> Controller.AwaitKeyPress
 
             
-            int[] consoleSize = InitializeConsoleDisplay.SetDisplayAndFontSize();
-            Controller.Run(consoleSize);
+            //int[] consoleSize = InitializeConsoleDisplay.SetDisplayAndFontSize();
+            Controller.Run();
         
         }
     }

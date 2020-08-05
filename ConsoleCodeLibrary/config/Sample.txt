@@ -1,0 +1,7 @@
+'Title'
+[Languages]
+<Keywords>
+:CONTENT:
+:CODE:
+:ENDCODE:
+:BREAK:
